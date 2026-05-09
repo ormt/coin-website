@@ -90,6 +90,13 @@
                 stamp.remove();
             });
         });
+
+        // Redirect to game after 3 seconds
+        setTimeout(() => {
+            document.body.style.transition = 'opacity 0.6s ease';
+            document.body.style.opacity = '0';
+            setTimeout(() => window.location.href = 'game.html', 650);
+        }, 3000);
     </script>
 </body>
 </html>
