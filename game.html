@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COIN Flip – Lucky Toss</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #06060f;
+            color: #fff;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+        }
+
+        #canvas-container {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* ---- Header ---- */
+        #title {
+            position: fixed;
+            top: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: clamp(1.2rem, 3vw, 2rem);
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 18px rgba(255,215,0,0.65), 0 0 40px rgba(255,140,0,0.3);
+            letter-spacing: 7px;
+            z-index: 10;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        /* ---- Score ---- */
+        #score-display {
+            position: fixed;
+            top: 16px;
+            right: 24px;
+            z-index: 10;
+            text-align: right;
+            background: rgba(0,0,0,0.45);
+            padding: 10px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,215,0,0.18);
+            backdrop-filter: blur(12px);
+        }
+        .sc-row { display: flex; gap: 18px; margin-top: 4px; }
+        .sc-col { text-align: center; }
+        .sc-label { font-size: 0.6rem; letter-spacing: 2px; opacity: 0.55; text-transform: uppercase; }
+        .sc-val { font-size: 1.6rem; font-weight: bold; line-height: 1.1; }
+        .sc-win { color: #00e88a; }
+        .sc-lose { color: #ff4455; }
+        .sc-div { color: rgba(255,255,255,0.15); font-size: 1.6rem; line-height: 1.1; }
+
+        /* ---- Back button ---- */
+        #back-btn {
+            position: fixed;
+            top: 16px;
+            left: 24px;
+            z-index: 10;
+            padding: 9px 18px;
+            border: 1px solid rgba(255,215,0,0.28);
+            border-radius: 20px;
+            background: rgba(0,0,0,0.45);
+            color: rgba(255,215,0,0.65);
+            cursor: pointer;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            transition: all 0.25s;
+            backdrop-filter: blur(12px);
+            font-family: inherit;
+        }
+        #back-btn:hover {
+            border-color: #ffd700;
+            color: #ffd700;
+            background: rgba(255,215,0,0.08);
+            box-shadow: 0 0 14px rgba(255,215,0,0.18);
+        }
+
+        /* ---- Controls panel ---- */
+        #controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px 20px 28px;
+            background: linear-gradient(to top, rgba(6,6,15,0.96) 55%, transparent);
+            gap: 12px;
+        }
+
+        #instruction {
+            font-size: 0.78rem;
+            color: rgba(255,215,0,0.48);
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            min-height: 1.2em;
+            transition: color 0.3s;
+        }
+
+        .pred-row { display: flex; gap: 14px; }
+
+        .pred-btn {
+            padding: 11px 34px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            font-family: inherit;
+            border: 2px solid rgba(255,215,0,0.32);
+            border-radius: 40px;
+            background: rgba(255,215,0,0.05);
+            color: rgba(255,215,0,0.62);
+            cursor: pointer;
+            transition: all 0.22s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .pred-btn:hover:not(:disabled) {
+            border-color: #ffd700;
+            color: #ffd700;
+            background: rgba(255,215,0,0.1);
+            box-shadow: 0 0 18px rgba(255,215,0,0.22);
+        }
+        .pred-btn.selected {
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.18);
+            color: #ffd700;
+            box-shadow: 0 0 24px rgba(255,215,0,0.32);
+        }
+        .pred-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        #flip-btn {
+            padding: 15px 60px;
+            font-size: 1.35rem;
+            font-weight: bold;
+            font-family: inherit;
+            border: none;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+            color: #1a0800;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            box-shadow: 0 4px 22px rgba(255,140,0,0.38), 0 0 50px rgba(255,215,0,0.08);
+            transition: all 0.22s;
+            position: relative;
+            overflow: hidden;
+        }
+        #flip-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.28) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        #flip-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 32px rgba(255,140,0,0.5), 0 0 70px rgba(255,215,0,0.12);
+        }
+        #flip-btn:active:not(:disabled) { transform: translateY(-1px); }
+        #flip-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+        /* ---- Result overlay ---- */
+        #result-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        #result-overlay.visible { opacity: 1; pointer-events: all; }
+
+        #result-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.62);
+            backdrop-filter: blur(5px);
+        }
+
+        #result-card {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 44px 56px;
+            background: rgba(10,10,25,0.82);
+            border-radius: 24px;
+            border: 1px solid rgba(255,215,0,0.2);
+            box-shadow: 0 20px 80px rgba(0,0,0,0.6);
+            max-width: 90vw;
+        }
+
+        #result-icon {
+            font-size: 4.5rem;
+            display: block;
+            margin-bottom: 8px;
+            animation: iconPop 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+        #result-title {
+            font-size: clamp(2.2rem, 7vw, 3.8rem);
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            animation: slideUp 0.45s 0.08s ease-out both;
+        }
+        .win-color {
+            color: #00e88a;
+            text-shadow: 0 0 28px rgba(0,232,138,0.75), 0 0 55px rgba(0,232,138,0.35);
+        }
+        .lose-color {
+            color: #ff4455;
+            text-shadow: 0 0 28px rgba(255,68,85,0.75);
+        }
+        #result-sub {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.62);
+            margin-top: 8px;
+            letter-spacing: 2px;
+            animation: slideUp 0.45s 0.18s ease-out both;
+        }
+        #result-streak {
+            font-size: 0.85rem;
+            color: rgba(255,215,0,0.55);
+            margin-top: 6px;
+            letter-spacing: 1px;
+            animation: slideUp 0.45s 0.24s ease-out both;
+        }
+
+        #play-again-btn {
+            margin-top: 28px;
+            padding: 13px 44px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            border: 2px solid rgba(255,215,0,0.42);
+            border-radius: 40px;
+            background: rgba(255,215,0,0.08);
+            color: #ffd700;
+            cursor: pointer;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            transition: all 0.25s;
+            animation: slideUp 0.45s 0.32s ease-out both;
+        }
+        #play-again-btn:hover {
+            background: rgba(255,215,0,0.2);
+            border-color: #ffd700;
+            box-shadow: 0 0 22px rgba(255,215,0,0.28);
+            transform: translateY(-2px);
+        }
+
+        @keyframes iconPop {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        @keyframes slideUp {
+            0% { transform: translateY(18px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        /* ---- Streak bar ---- */
+        #streak-bar {
+            position: fixed;
+            bottom: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            font-size: 0.72rem;
+            color: rgba(255,215,0,0.42);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+
+    <div id="title">⬡ COIN FLIP ⬡</div>
+
+    <div id="score-display">
+        <div class="sc-label">Score</div>
+        <div class="sc-row">
+            <div class="sc-col">
+                <div class="sc-val sc-win" id="wins-val">0</div>
+                <div class="sc-label">Wins</div>
+            </div>
+            <div class="sc-col sc-div">|</div>
+            <div class="sc-col">
+                <div class="sc-val sc-lose" id="losses-val">0</div>
+                <div class="sc-label">Losses</div>
+            </div>
+        </div>
+    </div>
+
+    <button id="back-btn" onclick="window.location.href='index.html'">← Home</button>
+
+    <div id="streak-bar" id="streak-bar"></div>
+
+    <div id="controls">
+        <div id="instruction">Choose your prediction</div>
+        <div class="pred-row">
+            <button class="pred-btn" id="btn-heads" onclick="selectPrediction('heads')">Heads</button>
+            <button class="pred-btn" id="btn-tails" onclick="selectPrediction('tails')">Tails</button>
+        </div>
+        <button id="flip-btn" onclick="startFlip()" disabled>FLIP !</button>
+    </div>
+
+    <div id="result-overlay">
+        <div id="result-backdrop" onclick="resetRound()"></div>
+        <div id="result-card">
+            <span id="result-icon">🎊</span>
+            <div id="result-title" class="win-color">YOU WIN!</div>
+            <div id="result-sub">It landed on HEADS</div>
+            <div id="result-streak"></div>
+            <button id="play-again-btn" onclick="resetRound()">Flip Again</button>
+        </div>
+    </div>
+
+    <!-- Three.js core -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+    // ════════════════════════════════════════════════════════════
+    //  GAME STATE
+    // ════════════════════════════════════════════════════════════
+    let prediction    = null;
+    let isFlipping    = false;
+    let flipResult    = null;
+    let streak        = 0;
+    let wins    = parseInt(localStorage.getItem('cg_wins')   || '0');
+    let losses  = parseInt(localStorage.getItem('cg_losses') || '0');
+
+    updateScore();
+
+    function updateScore() {
+        document.getElementById('wins-val').textContent   = wins;
+        document.getElementById('losses-val').textContent = losses;
+    }
+
+    function selectPrediction(side) {
+        if (isFlipping) return;
+        prediction = side;
+        document.getElementById('btn-heads').classList.toggle('selected', side === 'heads');
+        document.getElementById('btn-tails').classList.toggle('selected', side === 'tails');
+        document.getElementById('flip-btn').disabled = false;
+        document.getElementById('instruction').textContent =
+            `You picked ${side.toUpperCase()} — go for it!`;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  THREE.JS SCENE
+    // ════════════════════════════════════════════════════════════
+    const W = window.innerWidth, H = window.innerHeight;
+
+    const scene    = new THREE.Scene();
+    scene.background = new THREE.Color(0x06060f);
+    scene.fog = new THREE.FogExp2(0x06060f, 0.032);
+
+    const camera = new THREE.PerspectiveCamera(48, W / H, 0.1, 100);
+    camera.position.set(0, 4.2, 7.5);
+    camera.lookAt(0, -0.6, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.25;
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // — Lights —
+    scene.add(new THREE.AmbientLight(0x181830, 4));
+
+    const spotMain = new THREE.SpotLight(0xfff4cc, 5, 30, 0.55, 0.45);
+    spotMain.position.set(2, 13, 5);
+    spotMain.target.position.set(0, 0, 0);
+    spotMain.castShadow = true;
+    spotMain.shadow.mapSize.width  = 2048;
+    spotMain.shadow.mapSize.height = 2048;
+    scene.add(spotMain, spotMain.target);
+
+    const fillLight = new THREE.DirectionalLight(0x3344ff, 0.38);
+    fillLight.position.set(-6, 4, -4);
+    scene.add(fillLight);
+
+    const rimLight = new THREE.DirectionalLight(0xff9933, 0.55);
+    rimLight.position.set(7, 2, -6);
+    scene.add(rimLight);
+
+    // Core coin/scene constants (must be before IIFEs that use GROUND_Y)
+    const COIN_R   = 1.25;
+    const COIN_H   = 0.13;
+    const GROUND_Y = -1.85;
+    const REST_Y   = GROUND_Y + COIN_H / 2;
+    const PEAK_H   = 5.0;
+
+    // — Environment map for metallic reflections (canvas equirectangular) —
+    (function buildEnv() {
+        const ec = document.createElement('canvas');
+        ec.width = 512; ec.height = 256;
+        const ctx = ec.getContext('2d');
+        const bg = ctx.createLinearGradient(0, 0, 0, 256);
+        bg.addColorStop(0, '#08082a'); bg.addColorStop(0.5, '#12103a'); bg.addColorStop(1, '#020208');
+        ctx.fillStyle = bg; ctx.fillRect(0, 0, 512, 256);
+        [[70,35,90],[380,50,70],[200,18,55],[450,80,45],[130,60,40]].forEach(([x,y,r]) => {
+            const g = ctx.createRadialGradient(x,y,0,x,y,r);
+            g.addColorStop(0,'rgba(255,220,80,0.85)'); g.addColorStop(1,'rgba(255,220,80,0)');
+            ctx.fillStyle = g; ctx.fillRect(0,0,512,256);
+        });
+        const envTex = new THREE.CanvasTexture(ec);
+        envTex.mapping = THREE.EquirectangularReflectionMapping;
+        scene.environment = envTex;
+    })();
+
+    // — Ground (green felt table) —
+    (function buildGround() {
+        const gc = document.createElement('canvas');
+        gc.width = gc.height = 512;
+        const ctx = gc.getContext('2d');
+        const radG = ctx.createRadialGradient(256,256,20,256,256,290);
+        radG.addColorStop(0,'#1c3522'); radG.addColorStop(0.65,'#0e1f16'); radG.addColorStop(1,'#05100a');
+        ctx.fillStyle = radG; ctx.fillRect(0,0,512,512);
+        for (let i = 0; i < 18000; i++) {
+            const x = Math.random()*512, y = Math.random()*512;
+            const v = Math.floor(Math.random()*80);
+            ctx.fillStyle = `rgba(${v},${v+40},${v+20},${Math.random()*0.12})`;
+            ctx.fillRect(x, y, 1, 1);
+        }
+        ctx.strokeStyle = 'rgba(255,215,0,0.07)'; ctx.lineWidth = 18;
+        ctx.beginPath(); ctx.arc(256,256,228,0,Math.PI*2); ctx.stroke();
+        const gt = new THREE.CanvasTexture(gc);
+        const ground = new THREE.Mesh(
+            new THREE.CircleGeometry(11, 96),
+            new THREE.MeshStandardMaterial({ map: gt, roughness: 0.94, metalness: 0 })
+        );
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = GROUND_Y;
+        ground.receiveShadow = true;
+        scene.add(ground);
+    })();
+
+    // — Blob shadow under coin —
+    const blobShadow = (function() {
+        const bc = document.createElement('canvas');
+        bc.width = bc.height = 256;
+        const ctx = bc.getContext('2d');
+        const g = ctx.createRadialGradient(128,128,0,128,128,128);
+        g.addColorStop(0,'rgba(0,0,0,0.72)'); g.addColorStop(0.45,'rgba(0,0,0,0.38)'); g.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle = g; ctx.fillRect(0,0,256,256);
+        const mesh = new THREE.Mesh(
+            new THREE.PlaneGeometry(3.2, 3.2),
+            new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(bc), transparent: true, depthWrite: false })
+        );
+        mesh.rotation.x = -Math.PI / 2;
+        mesh.position.y = GROUND_Y + 0.01;
+        scene.add(mesh);
+        return mesh;
+    })();
+
+    // ════════════════════════════════════════════════════════════
+    //  COIN TEXTURES
+    // ════════════════════════════════════════════════════════════
+    function drawStar(ctx, cx, cy, pts, outerR, innerR, fillStyle) {
+        ctx.fillStyle = fillStyle;
+        ctx.beginPath();
+        for (let i = 0; i < pts * 2; i++) {
+            const r = i % 2 === 0 ? outerR : innerR;
+            const a = (i * Math.PI / pts) - Math.PI / 2;
+            i === 0 ? ctx.moveTo(cx + r*Math.cos(a), cy + r*Math.sin(a))
+                    : ctx.lineTo(cx + r*Math.cos(a), cy + r*Math.sin(a));
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function buildFaceCanvas(isHeads) {
+        const c = document.createElement('canvas');
+        c.width = c.height = 512;
+        const ctx = c.getContext('2d');
+
+        if (!isHeads) { ctx.save(); ctx.translate(512,512); ctx.scale(-1,-1); }
+
+        // Gold disc
+        const grad = ctx.createRadialGradient(256,256,8,256,256,260);
+        grad.addColorStop(0,   '#fff8b8');
+        grad.addColorStop(0.35,'#ffd700');
+        grad.addColorStop(0.72,'#d4a017');
+        grad.addColorStop(0.92,'#a87700');
+        grad.addColorStop(1,   '#6b4a00');
+        ctx.fillStyle = grad;
+        ctx.beginPath(); ctx.arc(256,256,256,0,Math.PI*2); ctx.fill();
+
+        // Rim highlight arc
+        ctx.strokeStyle = 'rgba(255,255,210,0.5)'; ctx.lineWidth = 7;
+        ctx.beginPath(); ctx.arc(256,256,248,-0.6,1.6); ctx.stroke();
+
+        // Outer decorative ring
+        ctx.strokeStyle = '#6b4a00'; ctx.lineWidth = 11;
+        ctx.beginPath(); ctx.arc(256,256,232,0,Math.PI*2); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,248,180,0.55)'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(256,256,223,0,Math.PI*2); ctx.stroke();
+
+        // Reeded dots
+        for (let i = 0; i < 62; i++) {
+            const a = (i/62)*Math.PI*2;
+            ctx.fillStyle = 'rgba(90,55,0,0.45)';
+            ctx.beginPath(); ctx.arc(256+228*Math.cos(a), 256+228*Math.sin(a), 3, 0, Math.PI*2); ctx.fill();
+        }
+
+        ctx.shadowColor = 'rgba(0,0,0,0.45)';
+        ctx.shadowBlur  = 7;
+        ctx.shadowOffsetY = 3;
+
+        if (isHeads) {
+            // COIN text
+            ctx.fillStyle = '#4a2e00';
+            ctx.font = 'bold 90px Georgia, serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText('COIN', 256, 232);
+            ctx.font = '26px Georgia, serif';
+            ctx.fillText('PVT. LTD.', 256, 275);
+            ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+            drawStar(ctx, 256, 338, 6, 24, 11, '#4a2e00');
+            drawStar(ctx, 148, 183, 5, 12, 5, '#4a2e00');
+            drawStar(ctx, 364, 183, 5, 12, 5, '#4a2e00');
+        } else {
+            // Big 8-point star
+            drawStar(ctx, 256, 220, 8, 108, 46, '#4a2e00');
+            ctx.shadowBlur = 0; ctx.shadowOffsetY = 0;
+            ctx.fillStyle = '#4a2e00';
+            ctx.font = 'bold 44px Georgia, serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'alphabetic';
+            ctx.fillText('★  TAILS  ★', 256, 370);
+        }
+
+        if (!isHeads) ctx.restore();
+        return c;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  COIN MESH
+    // ════════════════════════════════════════════════════════════
+    const coinGeo = new THREE.CylinderGeometry(COIN_R, COIN_R, COIN_H, 64, 1, false);
+    const coin = new THREE.Mesh(coinGeo, [
+        new THREE.MeshStandardMaterial({ color: 0xd4a017, metalness: 0.96, roughness: 0.12, envMapIntensity: 1.2 }),
+        new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(buildFaceCanvas(true)),  metalness: 0.82, roughness: 0.2 }),
+        new THREE.MeshStandardMaterial({ map: new THREE.CanvasTexture(buildFaceCanvas(false)), metalness: 0.82, roughness: 0.2 }),
+    ]);
+    coin.castShadow = true;
+    coin.position.y = REST_Y;
+    scene.add(coin);
+
+    // ════════════════════════════════════════════════════════════
+    //  ANIMATION
+    // ════════════════════════════════════════════════════════════
+    const FLIP_MS  = 1900;
+    let animStart  = 0;
+    let totalRotX  = 0;
+    let startRotX  = 0;
+    let targetRotX = 0;
+    let idleClock  = 0;
+
+    function easeOut3(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function coinY(t) {
+        const peak = 0.44;
+        if (t <= peak) {
+            const u = t / peak;
+            return REST_Y + PEAK_H * (1 - (1-u)*(1-u));
+        }
+        const u = (t - peak) / (1 - peak);
+        if (u < 0.86) return REST_Y + PEAK_H * (1 - (u/0.86)*(u/0.86)*1.08);
+        // Bounce
+        const b = (u - 0.86) / 0.14;
+        return REST_Y + 0.38 * Math.sin(b * Math.PI);
+    }
+
+    function spinProgress(t) {
+        if (t < 0.92) return t;
+        return 0.92 + 0.08 * easeOut3((t - 0.92) / 0.08);
+    }
+
+    function renderLoop() {
+        requestAnimationFrame(renderLoop);
+        const now = performance.now();
+
+        if (isFlipping) {
+            const t = Math.min((now - animStart) / FLIP_MS, 1);
+            coin.position.y = coinY(t);
+            coin.rotation.x = startRotX + spinProgress(t) * totalRotX;
+            coin.rotation.y += 0.018;
+
+            const heightAbove = Math.max(0, coin.position.y - REST_Y);
+            const sc = Math.max(0.18, 1 - (heightAbove / PEAK_H) * 0.78);
+            blobShadow.scale.set(sc, sc, 1);
+            blobShadow.material.opacity = sc * 0.9;
+
+            if (t >= 1) {
+                coin.position.y = REST_Y;
+                coin.rotation.x = targetRotX;
+                blobShadow.scale.set(1, 1, 1);
+                isFlipping = false;
+                setTimeout(showResult, 480);
+            }
+        } else {
+            idleClock += 0.016;
+            coin.rotation.y += 0.0045;
+            coin.position.y  = REST_Y + Math.sin(idleClock * 0.75) * 0.045;
+            blobShadow.scale.set(1.02, 1.02, 1);
+        }
+
+        renderer.render(scene, camera);
+    }
+    renderLoop();
+
+    // ════════════════════════════════════════════════════════════
+    //  FLIP LOGIC
+    // ════════════════════════════════════════════════════════════
+    function startFlip() {
+        if (!prediction || isFlipping) return;
+
+        flipResult = Math.random() < 0.5 ? 'heads' : 'tails';
+
+        // Normalize current rotX to [0, 2π)
+        startRotX = ((coin.rotation.x % (2*Math.PI)) + 2*Math.PI) % (2*Math.PI);
+
+        const baseSpins = Math.floor(Math.random() * 3) + 4; // 4–6 full spins
+        if (flipResult === 'heads') {
+            totalRotX  = baseSpins * 2 * Math.PI - startRotX;
+            targetRotX = 0;
+        } else {
+            totalRotX  = baseSpins * 2 * Math.PI + Math.PI - startRotX;
+            targetRotX = Math.PI;
+        }
+
+        isFlipping = true;
+        animStart  = performance.now();
+
+        document.getElementById('flip-btn').disabled = true;
+        document.querySelectorAll('.pred-btn').forEach(b => b.disabled = true);
+        document.getElementById('instruction').textContent = 'Flipping…';
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  RESULT
+    // ════════════════════════════════════════════════════════════
+    function showResult() {
+        const won = prediction === flipResult;
+
+        if (won) { wins++;   streak = Math.max(streak + 1, 1);  localStorage.setItem('cg_wins', wins); }
+        else     { losses++; streak = Math.min(streak - 1, -1); localStorage.setItem('cg_losses', losses); }
+        updateScore();
+
+        document.getElementById('result-icon').textContent  = won ? '🎊' : '💸';
+        document.getElementById('result-title').textContent = won ? 'YOU WIN!' : 'YOU LOSE!';
+        document.getElementById('result-title').className   = won ? 'win-color' : 'lose-color';
+        document.getElementById('result-sub').textContent   = `It landed on ${flipResult.toUpperCase()}`;
+
+        let streakMsg = '';
+        if (streak >=  3) streakMsg = `🔥 ${streak}-win streak!`;
+        if (streak <= -3) streakMsg = `😬 ${-streak}-loss streak…`;
+        document.getElementById('result-streak').textContent = streakMsg;
+
+        document.getElementById('result-overlay').classList.add('visible');
+
+        if (won) fireConfetti();
+        else     shakeScreen();
+    }
+
+    function fireConfetti() {
+        const base = { origin: { y: 0.58 }, zIndex: 200 };
+        const fire = (ratio, opts) =>
+            confetti({ ...base, ...opts, particleCount: Math.floor(220 * ratio) });
+
+        fire(0.25, { spread: 26, startVelocity: 58, colors: ['#ffd700','#ffaa00','#ff8c00'] });
+        fire(0.2,  { spread: 62, colors: ['#ffd700','#00e88a','#ffffff'] });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, colors: ['#ffd700','#ffeeaa'] });
+        fire(0.1,  { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1,  { spread: 120, startVelocity: 48, colors: ['#ffd700','#ff6600','#fff'] });
+    }
+
+    function shakeScreen() {
+        const cont = document.getElementById('canvas-container');
+        let n = 0;
+        const id = setInterval(() => {
+            const dx = (Math.random()-0.5)*11, dy = (Math.random()-0.5)*5;
+            cont.style.transform = `translate(${dx}px,${dy}px)`;
+            if (++n > 8) { clearInterval(id); cont.style.transform = ''; }
+        }, 55);
+    }
+
+    function resetRound() {
+        prediction = null;
+        document.getElementById('result-overlay').classList.remove('visible');
+        document.getElementById('btn-heads').classList.remove('selected');
+        document.getElementById('btn-tails').classList.remove('selected');
+        document.querySelectorAll('.pred-btn').forEach(b => b.disabled = false);
+        document.getElementById('flip-btn').disabled = true;
+        document.getElementById('instruction').textContent = 'Choose your prediction';
+        coin.rotation.x = targetRotX;
+        coin.rotation.y = 0;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    //  RESIZE
+    // ════════════════════════════════════════════════════════════
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    </script>
+</body>
+</html>
