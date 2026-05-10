@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoElite Workshop | Premium Vehicle Care</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --gold:        #c8a96e;
+      --gold-light:  #e8c97a;
+      --bg:          #080808;
+      --bg-2:        #111111;
+      --bg-card:     #161616;
+      --text:        #f0f0f0;
+      --muted:       #888;
+      --dim:         #444;
+      --border:      rgba(200,169,110,.15);
+      --border-h:    rgba(200,169,110,.4);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ─────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.3rem 5%;
+      background: rgba(8,8,8,.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: padding .3s;
+    }
+    nav.scrolled { padding: .85rem 5%; }
+
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.55rem; font-weight: 700;
+      color: var(--gold); letter-spacing: 2px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text); }
+
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none;
+      font-size: .8rem; letter-spacing: 1.5px; text-transform: uppercase;
+      font-weight: 500; transition: color .3s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+
+    .nav-cta {
+      background: transparent; border: 1px solid var(--gold);
+      color: var(--gold); padding: .55rem 1.7rem;
+      font-size: .78rem; letter-spacing: 2px; text-transform: uppercase;
+      font-family: 'Inter', sans-serif; font-weight: 500;
+      cursor: pointer; text-decoration: none; transition: all .3s;
+    }
+    .nav-cta:hover { background: var(--gold); color: var(--bg); }
+
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: pointer; padding: .3rem;
+    }
+    .hamburger span { width: 24px; height: 1.5px; background: var(--text); display: block; transition: all .3s; }
+
+    /* ── HERO ────────────────────────────── */
+    .hero {
+      height: 100vh; position: relative;
+      display: flex; align-items: center; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+      transform: scale(1.07);
+      transition: transform 10s ease;
+    }
+    .hero-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, rgba(8,8,8,.92) 0%, rgba(8,8,8,.55) 55%, rgba(8,8,8,.25) 100%);
+    }
+    .hero-content {
+      position: relative; z-index: 2;
+      padding: 0 5%; max-width: 720px;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: .8rem;
+      font-size: .7rem; letter-spacing: 4px; text-transform: uppercase;
+      color: var(--gold); font-weight: 500; margin-bottom: 1.6rem;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; width: 28px; height: 1px; background: var(--gold);
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 6vw, 5.2rem);
+      font-weight: 700; line-height: 1.08; margin-bottom: 1.6rem;
+    }
+    .hero h1 em { color: var(--gold); font-style: normal; }
+    .hero p {
+      font-size: 1.05rem; color: var(--muted);
+      max-width: 480px; line-height: 1.85; margin-bottom: 2.8rem;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+    .btn-primary {
+      background: var(--gold); color: var(--bg);
+      padding: 1rem 2.5rem; font-size: .8rem;
+      letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
+      font-family: 'Inter', sans-serif; border: none; cursor: pointer;
+      text-decoration: none; display: inline-block; transition: all .3s;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      padding: 1rem 2.5rem; font-size: .8rem;
+      letter-spacing: 2px; text-transform: uppercase; font-weight: 500;
+      font-family: 'Inter', sans-serif; border: 1px solid rgba(255,255,255,.25);
+      cursor: pointer; text-decoration: none; display: inline-block; transition: all .3s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    .scroll-hint {
+      position: absolute; bottom: 2.8rem; left: 50%;
+      transform: translateX(-50%); z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      color: var(--dim); font-size: .65rem; letter-spacing: 3px; text-transform: uppercase;
+      animation: nudge 2.2s ease-in-out infinite;
+    }
+    .scroll-hint::after {
+      content: ''; width: 1px; height: 48px;
+      background: linear-gradient(to bottom, var(--dim), transparent);
+    }
+    @keyframes nudge {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(7px); }
+    }
+
+    /* ── STATS BAR ───────────────────────── */
+    .stats {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      background: var(--bg-2);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      padding: 2.8rem 1.5rem; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem; color: var(--gold); font-weight: 700; line-height: 1;
+    }
+    .stat-lbl {
+      font-size: .7rem; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--muted); margin-top: .5rem;
+    }
+
+    /* ── SHARED SECTION STYLES ───────────── */
+    section { padding: 7rem 5%; }
+
+    .sec-head { text-align: center; margin-bottom: 4.5rem; }
+    .sec-tag {
+      display: inline-block; font-size: .68rem; letter-spacing: 4px;
+      text-transform: uppercase; color: var(--gold); font-weight: 500;
+      margin-bottom: .9rem;
+    }
+    .sec-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700; line-height: 1.2;
+      margin-bottom: 1.1rem;
+    }
+    .sec-sub {
+      color: var(--muted); max-width: 520px; margin: 0 auto;
+      font-size: .95rem; line-height: 1.85;
+    }
+    .rule {
+      width: 56px; height: 2px; background: var(--gold);
+      margin: 1.5rem auto 0;
+    }
+
+    /* ── SERVICES ────────────────────────── */
+    #services { background: var(--bg); padding-top: 7rem; padding-bottom: 7rem; }
+
+    .services-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1.5px; background: var(--border);
+      max-width: 1200px; margin: 0 auto;
+    }
+    .s-card {
+      background: var(--bg-card); padding: 3rem 2.4rem;
+      position: relative; overflow: hidden; transition: all .4s;
+    }
+    .s-card::after {
+      content: '';
+      position: absolute; left: 0; bottom: 0;
+      width: 100%; height: 2px; background: var(--gold);
+      transform: scaleX(0); transform-origin: left; transition: transform .4s;
+    }
+    .s-card:hover { background: #1c1c1c; transform: translateY(-4px); }
+    .s-card:hover::after { transform: scaleX(1); }
+    .s-icon { width: 52px; height: 52px; color: var(--gold); margin-bottom: 1.5rem; }
+    .s-card h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem; font-weight: 600; margin-bottom: .9rem;
+    }
+    .s-card p { color: var(--muted); font-size: .88rem; line-height: 1.8; }
+    .s-price {
+      margin-top: 1.4rem; font-size: .7rem;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+    }
+
+    /* ── WHY US ──────────────────────────── */
+    #why { background: var(--bg-2); }
+
+    .why-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 6rem; align-items: center;
+      max-width: 1200px; margin: 0 auto;
+    }
+    .why-img { position: relative; }
+    .why-img::before {
+      content: '';
+      position: absolute; top: -18px; left: -18px; right: 18px; bottom: 18px;
+      border: 1px solid var(--gold); z-index: 0;
+    }
+    .why-img img {
+      position: relative; z-index: 1;
+      width: 100%; height: 560px; object-fit: cover; display: block;
+    }
+    .exp-badge {
+      position: absolute; right: -18px; bottom: -18px; z-index: 2;
+      background: var(--gold); color: var(--bg);
+      padding: 1.8rem 1.6rem; text-align: center;
+      font-family: 'Playfair Display', serif;
+    }
+    .exp-badge .n { font-size: 3rem; font-weight: 700; line-height: 1; }
+    .exp-badge .l {
+      font-size: .65rem; letter-spacing: 2px; text-transform: uppercase;
+      font-family: 'Inter', sans-serif; margin-top: .2rem;
+    }
+
+    .why-content .sec-head { text-align: left; }
+    .why-content .rule { margin: 1.4rem 0 0; }
+
+    .feat-list { list-style: none; margin-top: 2.5rem; }
+    .feat-item {
+      display: flex; gap: 1.2rem; align-items: flex-start;
+      padding: 1.2rem 0; border-bottom: 1px solid var(--border);
+    }
+    .feat-item:last-child { border-bottom: none; }
+    .feat-ico {
+      width: 42px; height: 42px; flex-shrink: 0;
+      background: rgba(200,169,110,.08); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold);
+    }
+    .feat-txt h4 { font-size: .92rem; font-weight: 600; margin-bottom: .3rem; }
+    .feat-txt p { font-size: .84rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── GALLERY ─────────────────────────── */
+    #gallery { background: var(--bg); }
+
+    .gal-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      grid-template-rows: repeat(2, 290px);
+      gap: 5px; max-width: 1200px; margin: 0 auto;
+    }
+    .gal-item { overflow: hidden; position: relative; }
+    .gal-item:first-child { grid-row: span 2; }
+    .gal-item img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; transition: transform .6s ease;
+    }
+    .gal-item:hover img { transform: scale(1.07); }
+    .gal-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.55), transparent);
+      opacity: 0; transition: opacity .35s;
+    }
+    .gal-item:hover .gal-overlay { opacity: 1; }
+
+    /* ── BOOKING ─────────────────────────── */
+    #booking { background: var(--bg-2); }
+
+    .booking-wrap {
+      max-width: 880px; margin: 0 auto;
+      background: var(--bg-card); border: 1px solid var(--border); padding: 4rem;
+    }
+    .booking-form-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem;
+    }
+    .fg { display: flex; flex-direction: column; gap: .45rem; }
+    .fg.full { grid-column: span 2; }
+    .fg label {
+      font-size: .68rem; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--gold); font-weight: 500;
+    }
+    .fg input, .fg select, .fg textarea {
+      background: var(--bg-2); border: 1px solid var(--border);
+      color: var(--text); padding: .85rem 1.1rem;
+      font-family: 'Inter', sans-serif; font-size: .88rem;
+      outline: none; transition: border-color .3s; -webkit-appearance: none;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--gold);
+    }
+    .fg select option { background: var(--bg-card); }
+    .fg textarea { resize: vertical; min-height: 95px; }
+
+    .book-footer { margin-top: 2.5rem; text-align: center; }
+    .book-note { margin-top: 1rem; font-size: .78rem; color: var(--dim); }
+
+    .success-msg {
+      display: none;
+      border: 1px solid var(--gold); background: rgba(200,169,110,.08);
+      padding: 2rem; text-align: center;
+      color: var(--gold); font-size: .95rem; margin-top: 1.5rem;
+    }
+
+    /* ── TESTIMONIALS ────────────────────── */
+    #reviews { background: var(--bg); }
+
+    .reviews-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 1.5rem; max-width: 1200px; margin: 0 auto;
+    }
+    .r-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      padding: 2.4rem; position: relative; transition: border-color .3s;
+    }
+    .r-card:hover { border-color: var(--border-h); }
+    .r-card::before {
+      content: '"';
+      position: absolute; top: 1rem; right: 1.8rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 6rem; line-height: 1;
+      color: rgba(200,169,110,.08);
+    }
+    .stars { color: var(--gold); letter-spacing: 3px; font-size: .85rem; margin-bottom: 1.1rem; }
+    .r-text { color: var(--muted); font-size: .88rem; line-height: 1.85; margin-bottom: 1.5rem; }
+    .r-author { display: flex; align-items: center; gap: 1rem; }
+    .r-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--gold); color: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .r-name { font-size: .88rem; font-weight: 600; }
+    .r-role { font-size: .75rem; color: var(--dim); }
+
+    /* ── CTA BAND ─────────────────────────── */
+    .cta-band {
+      background: var(--gold); padding: 5rem 5%;
+      text-align: center;
+    }
+    .cta-band h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem); color: var(--bg);
+      font-weight: 700; margin-bottom: .9rem;
+    }
+    .cta-band p { color: rgba(8,8,8,.7); font-size: 1rem; margin-bottom: 2.2rem; }
+    .btn-dark {
+      background: var(--bg); color: var(--gold);
+      padding: 1rem 2.8rem; font-size: .8rem;
+      letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
+      font-family: 'Inter', sans-serif; border: none; cursor: pointer;
+      text-decoration: none; display: inline-block; transition: all .3s;
+    }
+    .btn-dark:hover { background: #1a1a1a; }
+
+    /* ── FOOTER ──────────────────────────── */
+    footer {
+      background: #050505;
+      border-top: 1px solid var(--border);
+      padding: 4.5rem 5% 2rem;
+    }
+    .foot-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem; margin-bottom: 3rem;
+    }
+    .foot-brand .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; color: var(--gold);
+      font-weight: 700; letter-spacing: 2px; margin-bottom: 1rem;
+    }
+    .foot-brand p { color: var(--dim); font-size: .84rem; line-height: 1.8; margin-bottom: 1.5rem; }
+    .socials { display: flex; gap: .7rem; }
+    .soc {
+      width: 36px; height: 36px; border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); text-decoration: none; font-size: .8rem;
+      font-weight: 600; transition: all .3s;
+    }
+    .soc:hover { border-color: var(--gold); color: var(--gold); }
+
+    .foot-col h4 {
+      font-size: .68rem; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 1.5rem; font-weight: 500;
+    }
+    .foot-col ul { list-style: none; }
+    .foot-col li { margin-bottom: .65rem; }
+    .foot-col a { color: var(--dim); text-decoration: none; font-size: .84rem; transition: color .3s; }
+    .foot-col a:hover { color: var(--gold); }
+
+    .ci { display: flex; gap: .8rem; align-items: flex-start; margin-bottom: .9rem; }
+    .ci svg { color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+    .ci span { color: var(--dim); font-size: .84rem; line-height: 1.5; }
+
+    .foot-bottom {
+      border-top: 1px solid var(--border); padding-top: 1.8rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .78rem; color: var(--dim);
+    }
+
+    /* ── SCROLL ANIMATIONS ───────────────── */
+    .fade-up {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-up.in { opacity: 1; transform: none; }
+
+    /* ── RESPONSIVE ──────────────────────── */
+    @media (max-width: 1024px) {
+      .services-grid { grid-template-columns: repeat(2,1fr); }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .why-grid { gap: 3.5rem; }
+    }
+    @media (max-width: 768px) {
+      .hamburger { display: flex; }
+      .nav-links, .nav-cta { display: none; }
+      .nav-links.open {
+        display: flex; flex-direction: column;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: var(--bg-2); padding: 1.5rem 5%;
+        border-bottom: 1px solid var(--border);
+      }
+      .stats { grid-template-columns: repeat(2,1fr); }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:nth-child(2n) { border-right: none; }
+      .services-grid { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .gal-grid { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+      .gal-item:first-child { grid-row: span 1; }
+      .booking-form-grid { grid-template-columns: 1fr; }
+      .fg.full { grid-column: span 1; }
+      .reviews-grid { grid-template-columns: 1fr; }
+      .foot-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .booking-wrap { padding: 2rem 1.5rem; }
+      .foot-bottom { flex-direction: column; gap: .5rem; text-align: center; }
+      .why-img img { height: 340px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ NAV ═══════════════════════ -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Auto<span>Elite</span></a>
+
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#why">About</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#reviews">Reviews</a></li>
+    <li><a href="#booking">Book</a></li>
+  </ul>
+
+  <a href="#booking" class="nav-cta">Book Now</a>
+
+  <button class="hamburger" id="menu" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══════════════════════ HERO ══════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-bg" id="heroBg"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">Premium Auto Care</div>
+    <h1>Where Precision<br>Meets <em>Passion</em></h1>
+    <p>Expert craftsmanship for every vehicle. From routine maintenance to complex repairs — we treat your car with the attention it deserves.</p>
+    <div class="hero-btns">
+      <a href="#booking" class="btn-primary">Book a Service</a>
+      <a href="#services" class="btn-ghost">Our Services</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">Scroll</div>
+</section>
+
+<!-- ═══════════════════════ STATS ═════════════════════ -->
+<div class="stats" id="stats">
+  <div class="stat">
+    <div class="stat-num" data-target="15" data-suffix="+">0</div>
+    <div class="stat-lbl">Years of Excellence</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" data-target="12000" data-suffix="+">0</div>
+    <div class="stat-lbl">Vehicles Serviced</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" data-target="24" data-suffix="+">0</div>
+    <div class="stat-lbl">Expert Technicians</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" data-target="98" data-suffix="%">0</div>
+    <div class="stat-lbl">Client Satisfaction</div>
+  </div>
+</div>
+
+<!-- ════════════════════ SERVICES ════════════════════ -->
+<section id="services">
+  <div class="sec-head fade-up">
+    <span class="sec-tag">What We Offer</span>
+    <h2 class="sec-title">Our Premium Services</h2>
+    <p class="sec-sub">Comprehensive automotive care powered by the latest technology and decades of field expertise.</p>
+    <div class="rule"></div>
+  </div>
+
+  <div class="services-grid">
+    <!-- Engine Diagnostics -->
+    <div class="s-card fade-up">
+      <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/>
+        <line x1="12" y1="3" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="21"/>
+        <line x1="3" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="21" y2="12"/>
+      </svg>
+      <h3>Engine Diagnostics</h3>
+      <p>State-of-the-art OBD-II scanning and live data analysis to accurately pinpoint faults before they escalate. No guesswork — only precision.</p>
+      <div class="s-price">From NPR 1,500</div>
+    </div>
+
+    <!-- Oil & Fluids -->
+    <div class="s-card fade-up">
+      <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+      </svg>
+      <h3>Oil &amp; Fluid Service</h3>
+      <p>Full oil change with premium synthetic or semi-synthetic grades. Comprehensive fluid inspection and top-up for all critical systems including brake, coolant, and power steering.</p>
+      <div class="s-price">From NPR 800</div>
+    </div>
+
+    <!-- Brakes -->
+    <div class="s-card fade-up">
+      <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/>
+        <path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M19.07 4.93l-2.83 2.83M7.76 16.24l-2.83 2.83"/>
+      </svg>
+      <h3>Brake System Service</h3>
+      <p>Complete brake inspection, pad and rotor replacement, caliper overhaul, and hydraulic fluid flush. Guaranteed stopping power you can trust in any condition.</p>
+      <div class="s-price">From NPR 2,500</div>
+    </div>
+
+    <!-- Tires -->
+    <div class="s-card fade-up">
+      <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/>
+        <path d="M12 6v3m0 6v3m-6-6h3m6 0h3"/>
+      </svg>
+      <h3>Tire Services</h3>
+      <p>Professional rotation, computer wheel balancing, 3D alignment, and replacement. Extend tire life, reduce fuel consumption, and keep your ride smooth.</p>
+      <div class="s-price">From NPR 1,200</div>
+    </div>
+
+    <!-- AC -->
+    <div class="s-card fade-up">
+      <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="2" y="7" width="20" height="10" rx="2"/>
+        <path d="M7 11h10M7 15h4"/><path d="M2 11h2M20 11h2"/>
+      </svg>
+      <h3>AC &amp; Climate Control</h3>
+      <p>Full refrigerant recharge, leak detection, compressor service, and cabin air-filter replacement. Year-round comfort, optimised for Nepal's climate swings.</p>
+      <div class="s-price">From NPR 2,000</div>
+    </div>
+
+    <!-- Electrical -->
+    <div class="s-card fade-up">
+      <svg class="s-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      </svg>
+      <h3>Electrical Systems</h3>
+      <p>Battery load testing, alternator and starter diagnostics, wiring repair, sensor replacement, and ECU programming for both conventional and hybrid vehicles.</p>
+      <div class="s-price">From NPR 1,800</div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ WHY US ══════════════════════ -->
+<section id="why">
+  <div class="why-grid">
+    <div class="why-img fade-up">
+      <img
+        src="https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?auto=format&fit=crop&w=800&q=80"
+        alt="Expert mechanic at work"
+        loading="lazy"
+      />
+      <div class="exp-badge">
+        <div class="n">15+</div>
+        <div class="l">Years of<br>Excellence</div>
+      </div>
+    </div>
+
+    <div class="why-content">
+      <div class="sec-head">
+        <span class="sec-tag">Why Choose Us</span>
+        <h2 class="sec-title">Crafted for the<br>Discerning Driver</h2>
+        <div class="rule"></div>
+      </div>
+
+      <ul class="feat-list">
+        <li class="feat-item">
+          <div class="feat-ico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="feat-txt">
+            <h4>Certified Master Technicians</h4>
+            <p>Our team holds international certifications and undergoes continuous training on every new platform — from turbodiesels to full EVs.</p>
+          </div>
+        </li>
+        <li class="feat-item">
+          <div class="feat-ico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="feat-txt">
+            <h4>Same-Day Turnaround</h4>
+            <p>We value your schedule. Most services are completed within the same working day with clear timelines from drop-off to collection.</p>
+          </div>
+        </li>
+        <li class="feat-item">
+          <div class="feat-ico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="feat-txt">
+            <h4>2-Year Service Warranty</h4>
+            <p>Every repair and service is backed by our comprehensive 2-year / 40,000 km warranty. We stand behind every bolt we turn.</p>
+          </div>
+        </li>
+        <li class="feat-item">
+          <div class="feat-ico">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <div class="feat-txt">
+            <h4>OEM &amp; Premium Parts Only</h4>
+            <p>We fit only manufacturer-approved or premium-grade aftermarket components. Your vehicle's integrity is never negotiated.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ GALLERY ═════════════════════ -->
+<section id="gallery">
+  <div class="sec-head fade-up">
+    <span class="sec-tag">Inside the Workshop</span>
+    <h2 class="sec-title">Our Facility</h2>
+    <div class="rule"></div>
+  </div>
+
+  <div class="gal-grid fade-up">
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80" alt="Mechanic working on car" loading="lazy" />
+      <div class="gal-overlay"></div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?auto=format&fit=crop&w=700&q=80" alt="Car engine detail" loading="lazy" />
+      <div class="gal-overlay"></div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?auto=format&fit=crop&w=700&q=80" alt="Performance vehicle" loading="lazy" />
+      <div class="gal-overlay"></div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=700&q=80" alt="Car mechanic service" loading="lazy" />
+      <div class="gal-overlay"></div>
+    </div>
+    <div class="gal-item">
+      <img src="https://images.unsplash.com/photo-1507136566006-cfc505b114fc?auto=format&fit=crop&w=700&q=80" alt="Auto repair shop" loading="lazy" />
+      <div class="gal-overlay"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ BOOKING ═════════════════════ -->
+<section id="booking">
+  <div class="sec-head fade-up">
+    <span class="sec-tag">Reserve Your Slot</span>
+    <h2 class="sec-title">Book a Service</h2>
+    <p class="sec-sub">Schedule online in under two minutes. Our team will confirm your slot within two hours.</p>
+    <div class="rule"></div>
+  </div>
+
+  <div class="booking-wrap fade-up">
+    <form id="bookForm">
+      <div class="booking-form-grid">
+        <div class="fg">
+          <label for="fName">First Name</label>
+          <input type="text" id="fName" placeholder="Ritesh" required />
+        </div>
+        <div class="fg">
+          <label for="lName">Last Name</label>
+          <input type="text" id="lName" placeholder="Tamrakar" required />
+        </div>
+        <div class="fg">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+977 98XXXXXXXX" required />
+        </div>
+        <div class="fg">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </div>
+        <div class="fg">
+          <label for="make">Vehicle Make</label>
+          <select id="make" required>
+            <option value="" disabled selected>Select Make</option>
+            <option>Toyota</option>
+            <option>Honda</option>
+            <option>Hyundai</option>
+            <option>Kia</option>
+            <option>Suzuki</option>
+            <option>Mitsubishi</option>
+            <option>Ford</option>
+            <option>BMW</option>
+            <option>Mercedes-Benz</option>
+            <option>Audi</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label for="model">Model &amp; Year</label>
+          <input type="text" id="model" placeholder="e.g. Corolla 2022" required />
+        </div>
+        <div class="fg">
+          <label for="svc">Service Required</label>
+          <select id="svc" required>
+            <option value="" disabled selected>Select Service</option>
+            <option>Engine Diagnostics</option>
+            <option>Oil &amp; Fluid Service</option>
+            <option>Brake System Service</option>
+            <option>Tire Services</option>
+            <option>AC &amp; Climate Control</option>
+            <option>Electrical Systems</option>
+            <option>Full Vehicle Inspection</option>
+            <option>Transmission Service</option>
+            <option>Other / Not Sure</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label for="date">Preferred Date</label>
+          <input type="date" id="date" required />
+        </div>
+        <div class="fg full">
+          <label for="notes">Additional Notes</label>
+          <textarea id="notes" placeholder="Describe the issue or any special requests…"></textarea>
+        </div>
+      </div>
+
+      <div class="book-footer">
+        <button type="submit" class="btn-primary">Confirm Booking</button>
+        <p class="book-note">We'll contact you within 2 hours to confirm your appointment.</p>
+      </div>
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      ✓ &nbsp;Booking received. We'll be in touch shortly to confirm your appointment.
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TESTIMONIALS ═════════════════ -->
+<section id="reviews">
+  <div class="sec-head fade-up">
+    <span class="sec-tag">Client Reviews</span>
+    <h2 class="sec-title">What Our Clients Say</h2>
+    <div class="rule"></div>
+  </div>
+
+  <div class="reviews-grid">
+    <div class="r-card fade-up">
+      <div class="stars">★★★★★</div>
+      <p class="r-text">"AutoElite completely transformed my experience with car servicing. Professional, transparent, and the quality of work is simply unmatched. My BMW drives like it just left the factory floor."</p>
+      <div class="r-author">
+        <div class="r-avatar">AR</div>
+        <div>
+          <div class="r-name">Arun Rai</div>
+          <div class="r-role">BMW 3 Series Owner</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r-card fade-up">
+      <div class="stars">★★★★★</div>
+      <p class="r-text">"They diagnosed an issue three other workshops completely missed. Honest pricing, spotless facility, same-day service. I will not take my car anywhere else."</p>
+      <div class="r-author">
+        <div class="r-avatar">SK</div>
+        <div>
+          <div class="r-name">Sunita Karki</div>
+          <div class="r-role">Toyota Fortuner Owner</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="r-card fade-up">
+      <div class="stars">★★★★★</div>
+      <p class="r-text">"The online booking is so convenient. I dropped my car, received a full diagnostic report with photos, and had it back the same afternoon. This is how a modern workshop should operate."</p>
+      <div class="r-author">
+        <div class="r-avatar">PM</div>
+        <div>
+          <div class="r-name">Prashant Maharjan</div>
+          <div class="r-role">Honda CR-V Owner</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════ CTA BAND ════════════════════ -->
+<div class="cta-band">
+  <h2>Ready to Experience the Difference?</h2>
+  <p>Join over 12,000 satisfied clients who trust AutoElite with their vehicles.</p>
+  <a href="#booking" class="btn-dark">Schedule a Service</a>
+</div>
+
+<!-- ════════════════════ FOOTER ══════════════════════ -->
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div class="logo">AutoElite</div>
+      <p>Kathmandu's premier vehicle workshop, dedicated to excellence in automotive care since 2009. We treat every vehicle as if it were our own.</p>
+      <div class="socials">
+        <a href="#" class="soc" aria-label="Facebook">f</a>
+        <a href="#" class="soc" aria-label="Instagram">in</a>
+        <a href="#" class="soc" aria-label="WhatsApp">w</a>
+      </div>
+    </div>
+
+    <div class="foot-col">
+      <h4>Services</h4>
+      <ul>
+        <li><a href="#services">Engine Diagnostics</a></li>
+        <li><a href="#services">Oil &amp; Fluids</a></li>
+        <li><a href="#services">Brake Service</a></li>
+        <li><a href="#services">Tire Services</a></li>
+        <li><a href="#services">AC Service</a></li>
+        <li><a href="#services">Electrical</a></li>
+      </ul>
+    </div>
+
+    <div class="foot-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#why">About Us</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#booking">Book Now</a></li>
+      </ul>
+    </div>
+
+    <div class="foot-col">
+      <h4>Contact</h4>
+      <div class="ci">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        <span>Pulchowk, Lalitpur<br>Kathmandu, Nepal</span>
+      </div>
+      <div class="ci">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.93 12 19.79 19.79 0 0 1 1.85 3.4 2 2 0 0 1 3.83 1.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9a16 16 0 0 0 6.26 6.26l.85-.85a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+        <span>+977 01-5555000</span>
+      </div>
+      <div class="ci">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span>Sun–Fri: 8 AM – 6 PM<br>Sat: 9 AM – 4 PM</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot-bottom">
+    <span>© 2026 AutoElite Workshop. All rights reserved.</span>
+    <span>Crafted with precision. Built with passion.</span>
+  </div>
+</footer>
+
+<script>
+  /* ── Hamburger ─────────────────────── */
+  const nav       = document.getElementById('nav');
+  const navLinks  = document.getElementById('navLinks');
+  const menuBtn   = document.getElementById('menu');
+
+  menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+
+  /* ── Nav shrink on scroll ──────────── */
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  /* ── Hero parallax ─────────────────── */
+  const heroBg = document.getElementById('heroBg');
+  window.addEventListener('scroll', () => {
+    heroBg.style.transform = `scale(1.07) translateY(${window.scrollY * 0.25}px)`;
+  });
+
+  /* ── Fade-up observer ──────────────── */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+  /* ── Counter animation ─────────────── */
+  function runCounter(el) {
+    const target = parseInt(el.dataset.target, 10);
+    const suffix = el.dataset.suffix || '';
+    const dur    = 2000;
+    const step   = target / (dur / 16);
+    let cur = 0;
+
+    const t = setInterval(() => {
+      cur += step;
+      if (cur >= target) { cur = target; clearInterval(t); }
+      const disp = target >= 1000
+        ? Math.floor(cur).toLocaleString()
+        : Math.floor(cur);
+      el.textContent = disp + suffix;
+    }, 16);
+  }
+
+  const statsIo = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('[data-target]').forEach(runCounter);
+        statsIo.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  const statsEl = document.getElementById('stats');
+  if (statsEl) statsIo.observe(statsEl);
+
+  /* ── Date picker – disallow past ───── */
+  const dateEl = document.getElementById('date');
+  if (dateEl) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    dateEl.min = tomorrow.toISOString().split('T')[0];
+  }
+
+  /* ── Booking form submit ────────────── */
+  const form       = document.getElementById('bookForm');
+  const successMsg = document.getElementById('successMsg');
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    form.style.display = 'none';
+    successMsg.style.display = 'block';
+  });
+</script>
+</body>
+</html>
