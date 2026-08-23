@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Track your commission · Kalakunja Art House</title>
+<meta name="description" content="Follow your commission through sketch, painting, studio review and delivery using your order code." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/kalakunja.css" />
+<style>
+  .lookup { max-width: 560px; margin: 0 auto; }
+  .lookup form { display: flex; gap: .6rem; }
+  .lookup input {
+    flex: 1; font-family: ui-monospace, Consolas, monospace;
+    letter-spacing: .16em; text-transform: uppercase; font-size: 1.05rem;
+  }
+  .recent { font-size: .85rem; color: var(--ink-faint); margin-top: 1rem; text-align: center; }
+  .recent button {
+    background: none; border: 1px dashed var(--line-strong); border-radius: 8px;
+    padding: .2rem .6rem; margin: .2rem; cursor: pointer;
+    font-family: ui-monospace, Consolas, monospace; font-size: .82rem; color: var(--ink-soft);
+  }
+  .recent button:hover { border-color: var(--sindoor); color: var(--sindoor); }
+
+  .order-head {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 2rem; align-items: start;
+  }
+  .stage-band {
+    display: flex; gap: .35rem; margin: 1.4rem 0 .6rem;
+  }
+  .stage-band div { flex: 1; height: 8px; border-radius: 99px; background: var(--surface-2); }
+  .stage-band div.done { background: var(--malachite); }
+  .stage-band div.now  { background: linear-gradient(90deg, var(--brass), var(--sindoor)); }
+
+  .hand-card {
+    background: linear-gradient(150deg, var(--indigo-dk), #24406b);
+    color: #f3e9d7; border-radius: var(--radius); padding: 1.4rem;
+    position: relative; overflow: hidden;
+  }
+  .hand-card::after {
+    content: ''; position: absolute; inset: 0; opacity: .16; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Cg fill='none' stroke='%23e2bb5c' stroke-width='1'%3E%3Ccircle cx='25' cy='25' r='10'/%3E%3Cpath d='M25 5 L45 25 L25 45 L5 25 Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hand-card > * { position: relative; z-index: 1; }
+  .hand-seal {
+    width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center;
+    border: 2px solid rgba(226,187,92,.7); font-family: var(--font-display);
+    font-size: 1.3rem; color: #e2bb5c; margin-bottom: .8rem;
+  }
+  .kv { display: grid; gap: .5rem; font-size: .93rem; }
+  .kv div { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: .4rem; border-bottom: 1px dashed var(--line); }
+  .kv div span:first-child { color: var(--ink-faint); }
+  .kv div span:last-child { font-weight: 600; text-align: right; }
+  @media (max-width: 900px) { .order-head { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="prayer-strip"></div>
+
+<header class="site-head">
+  <div class="head-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="#fffaf0" stroke="#a4232c" stroke-width="2"/>
+        <g fill="none" stroke="#c39320" stroke-width="1.6">
+          <circle cx="32" cy="32" r="21"/><path d="M32 11 L48 32 L32 53 L16 32 Z"/><path d="M11 32 L32 16 L53 32 L32 48 Z"/>
+        </g>
+        <circle cx="32" cy="32" r="6" fill="#a4232c"/><circle cx="32" cy="32" r="2.4" fill="#e2bb5c"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-deva">कलाकुञ्ज</span>
+        <span class="brand-en">Kalakunja Art House</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#traditions">Traditions</a></li>
+      <li><a href="index.html#pricing">Pricing</a></li>
+      <li><a href="track.html">Track order</a></li>
+      <li><a class="btn btn-primary btn-sm" href="order.html">Commission</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="section" style="padding-top:2.6rem">
+  <div class="wrap">
+
+    <div class="center mb2">
+      <span class="eyebrow">Order tracking</span>
+      <h1 style="font-size:clamp(2rem,4.4vw,3rem)">Where is my painting? <span class="deva">कहाँ पुग्यो?</span></h1>
+      <p class="lede">Enter the code from your confirmation. Progress, milestones and studio notes
+        live on one page — no login, no account.</p>
+    </div>
+
+    <div class="lookup panel">
+      <form id="lookupForm">
+        <input type="text" id="codeInput" placeholder="KK-XXXXX" maxlength="9" aria-label="Order code" />
+        <button class="btn btn-primary" type="submit">Track</button>
+      </form>
+      <div class="recent" id="recent"></div>
+    </div>
+
+    <div id="result" class="mt3 hide"></div>
+  </div>
+</main>
+
+<div class="lattice"></div>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-bottom" style="margin-top:0;border-top:none;padding-top:0">
+      <span>© <span data-year></span> Kalakunja Art House · a COIN Pvt. Ltd. studio</span>
+      <span><a href="index.html">Home</a> · <a href="order.html">Commission</a> · <a href="studio.html">Dispatch desk</a></span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+<script src="assets/js/kalakunja.js"></script>
+<script>
+(function () {
+  'use strict';
+  document.addEventListener('DOMContentLoaded', function () {
+    var result = document.getElementById('result');
+
+    /* Convenience only — this demo keeps orders in your browser, so we can
+       offer the codes that exist on this device. A live studio would not. */
+    function renderRecent() {
+      var all = KK.orders().slice(0, 6);
+      if (!all.length) { document.getElementById('recent').innerHTML = ''; return; }
+      document.getElementById('recent').innerHTML =
+        'Codes on this device: ' + all.map(function (o) {
+          return '<button data-code="' + o.id + '">' + o.id + '</button>';
+        }).join('');
+    }
+
+    document.getElementById('recent').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-code]');
+      if (!b) { return; }
+      document.getElementById('codeInput').value = b.dataset.code;
+      lookup(b.dataset.code);
+    });
+
+    document.getElementById('lookupForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      lookup(document.getElementById('codeInput').value);
+    });
+
+    function lookup(code) {
+      var o = KK.order(code);
+      if (!o) {
+        result.classList.remove('hide');
+        result.innerHTML = '<div class="panel center"><h3>No commission under that code</h3>' +
+          '<p class="muted mt1">Check the code on your confirmation email, or write to ' +
+          '<b>desk@kalakunja.com.np</b> and we will find it.</p></div>';
+        return;
+      }
+      render(o);
+    }
+
+    function render(o) {
+      var style = KK.byId(KK.STYLES, o.brief.style);
+      var size = KK.byId(KK.SIZES, o.brief.size);
+      var med = KK.byId(KK.MEDIUMS, o.brief.medium);
+      var fin = KK.byId(KK.FINISHES, o.brief.finish);
+      var tim = KK.byId(KK.TIMELINES, o.brief.timeline);
+      var idx = KK.stageIndex(o.status);
+      var pct = Math.round((idx / (KK.STAGES.length - 1)) * 100);
+      var hand = o.assignedTo ? KK.publicHand(o.assignedTo, o.brief.style) : null;
+
+      var band = KK.STAGES.map(function (s, i) {
+        return '<div class="' + (i < idx ? 'done' : (i === idx ? 'now' : '')) + '" title="' + KK.esc(s.client) + '"></div>';
+      }).join('');
+
+      /* The client-facing timeline uses `client` wording and never names a person. */
+      var timeline = KK.STAGES.map(function (s, i) {
+        var ev = null;
+        for (var k = 0; k < (o.events || []).length; k++) {
+          if (o.events[k].stage === s.id) { ev = o.events[k]; }
+        }
+        var cls = i < idx ? 'done' : (i === idx ? 'current' : '');
+        var when = ev ? KK.ktm(ev.at) : (i > idx ? 'Upcoming' : '');
+        return '<li class="' + cls + '">' +
+          '<div class="t-title">' + KK.esc(s.client) +
+            ' <span class="deva" style="font-size:.85rem">' + KK.esc(s.deva) + '</span></div>' +
+          '<div class="t-meta">' + KK.esc(when) + (ev && ev.clientNote ? ' — ' + KK.esc(ev.clientNote) : '') + '</div>' +
+          '</li>';
+      }).join('');
+
+      var handBlock = hand
+        ? '<div class="hand-card">' +
+            '<div class="hand-seal">' + KK.esc(hand.handle.replace('Hand No. ', '')) + '</div>' +
+            '<div style="font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#e2bb5c">Assigned to</div>' +
+            '<div style="font-family:var(--font-display);font-size:1.5rem;line-height:1.2">' + KK.esc(hand.handle) + '</div>' +
+            '<div style="opacity:.9;font-size:.95rem">' + KK.esc(hand.tier) + ' · ' + KK.esc(hand.atelier) + '</div>' +
+            '<div style="opacity:.75;font-size:.88rem;margin-top:.5rem">' + hand.yearsAtStudio +
+              ' years with the studio</div>' +
+            '<p style="opacity:.8;font-size:.82rem;margin-top:.9rem;border-top:1px solid rgba(226,187,92,.3);padding-top:.7rem">' +
+              'Member artists work under the studio\'s name. Every message, revision and payment runs ' +
+              'through the studio desk — you never need to chase an individual.</p>' +
+          '</div>'
+        : '<div class="hand-card">' +
+            '<div class="hand-seal">…</div>' +
+            '<div style="font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:#e2bb5c">Placement</div>' +
+            '<div style="font-family:var(--font-display);font-size:1.4rem;line-height:1.25">With the dispatch desk</div>' +
+            '<p style="opacity:.85;font-size:.9rem;margin-top:.6rem">Your brief is being matched against the ' +
+              KK.esc(style.atelier) + ' roster. We place work within two working days of receiving a brief.</p>' +
+          '</div>';
+
+      result.classList.remove('hide');
+      result.innerHTML =
+        '<div class="panel">' +
+          '<div class="row-between">' +
+            '<div>' +
+              '<span class="chip chip-brass mono">' + KK.esc(o.id) + '</span> ' +
+              '<span class="chip chip-' + (idx >= 7 ? 'green' : (idx >= 3 ? 'red' : 'blue')) + '">' +
+                KK.esc(KK.STAGES[idx].client) + '</span>' +
+              '<h2 style="margin-top:.6rem">' + KK.esc(o.brief.subject || style.name + ' commission') + '</h2>' +
+              '<p class="muted" style="font-size:.92rem">' + KK.esc(style.name) + ' · ' + KK.esc(size.dims) +
+                ' · ' + KK.esc(med.label) + '</p>' +
+            '</div>' +
+            '<div style="text-align:right">' +
+              '<div class="big-num">' + pct + '%</div>' +
+              '<div class="muted" style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase">Complete</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="stage-band">' + band + '</div>' +
+          '<p class="muted" style="font-size:.85rem">Brief received ' + KK.ktmDate(o.createdAt) +
+            ' · estimated hand-over ' + KK.ktmDate(o.quote.etaDate) + '</p>' +
+        '</div>' +
+
+        '<div class="order-head mt2">' +
+          '<div class="panel">' +
+            '<h3 class="mb1">Progress</h3>' +
+            '<ol class="timeline">' + timeline + '</ol>' +
+          '</div>' +
+          '<div class="stack">' +
+            handBlock +
+            '<div class="panel">' +
+              '<h3 class="mb1">Your brief</h3>' +
+              '<div class="kv">' +
+                kv('Tradition', style.name + ' · ' + style.deva) +
+                kv('Canvas', size.label + ' · ' + size.dims) +
+                kv('Medium', med.label) +
+                kv('Finish', fin.label) +
+                kv('Timeline', tim.label + ' · ' + tim.sub) +
+                kv('Palette', o.brief.palette || '—') +
+                kv('Additions', (o.brief.extras && o.brief.extras.length)
+                    ? o.brief.extras.map(function (id) { return KK.byId(KK.EXTRAS, id).label; }).join(', ')
+                    : 'None') +
+              '</div>' +
+              (o.brief.notes ? '<p class="muted" style="font-size:.88rem;margin-top:.9rem">' +
+                  '<b>Your note:</b> ' + KK.esc(o.brief.notes) + '</p>' : '') +
+            '</div>' +
+            '<div class="panel">' +
+              '<h3 class="mb1">Payment</h3>' +
+              '<div class="kv">' +
+                kv('Commission total', KK.npr(o.quote.total) + ' <span class="muted">≈ ' + KK.usd(o.quote.total) + '</span>') +
+                kv('Deposit (40%)', KK.npr(o.quote.deposit)) +
+                kv('Balance on approval', KK.npr(o.quote.total - o.quote.deposit)) +
+              '</div>' +
+              '<p class="muted" style="font-size:.84rem;margin-top:.8rem">' +
+                'Bank transfer, card, eSewa or Khalti. Quote ' + KK.esc(o.id) + ' as the reference.</p>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="panel mt2 center">' +
+          '<h3>Need to change something?</h3>' +
+          '<p class="muted mt1" style="font-size:.93rem">Write to <b>desk@kalakunja.com.np</b> or call ' +
+            '+977 1 5555 019 (Sun–Fri, 10:00–18:00 NPT) quoting <b class="mono">' + KK.esc(o.id) + '</b>. ' +
+            'Changes at the sketch stage are free; after that we re-quote.</p>' +
+        '</div>';
+
+      window.scrollTo({ top: result.offsetTop - 90, behavior: 'smooth' });
+    }
+
+    function kv(a, b) { return '<div><span>' + KK.esc(a) + '</span><span>' + b + '</span></div>'; }
+
+    renderRecent();
+    var pre = new URLSearchParams(location.search).get('code');
+    if (pre) { document.getElementById('codeInput').value = pre.toUpperCase(); lookup(pre); }
+  });
+})();
+</script>
+</body>
+</html>

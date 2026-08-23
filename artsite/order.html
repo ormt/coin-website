@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Commission a work · Kalakunja Art House</title>
+<meta name="description" content="Write your commission brief — tradition, canvas, medium, finish and deadline — with a live price. The studio places the work with the right hand." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/kalakunja.css" />
+<style>
+  .order-layout { display: grid; grid-template-columns: 1fr 340px; gap: 2rem; align-items: start; }
+  .quote-rail { position: sticky; top: 92px; }
+
+  /* stepper */
+  .stepper { display: flex; gap: .4rem; margin-bottom: 1.8rem; flex-wrap: wrap; }
+  .stepper li { list-style: none; flex: 1 1 120px; }
+  .stepper .bar { height: 4px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+  .stepper .bar i { display: block; height: 100%; width: 0; background: var(--sindoor); transition: width .4s; }
+  .stepper li.done .bar i, .stepper li.active .bar i { width: 100%; }
+  .stepper li.active .bar i { background: linear-gradient(90deg, var(--brass), var(--sindoor)); }
+  .stepper .lbl {
+    font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-faint); margin-top: .45rem; font-weight: 700;
+  }
+  .stepper li.active .lbl { color: var(--sindoor); }
+  .stepper li.done .lbl { color: var(--ink-soft); }
+
+  .step-panel { display: none; }
+  .step-panel.on { display: block; animation: fadeUp .35s ease; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  .step-head { margin-bottom: 1.4rem; }
+  .step-head h2 { font-size: 1.85rem; }
+  .step-head p { color: var(--ink-soft); font-size: .96rem; margin-top: .3rem; }
+
+  .nav-row { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+
+  /* quote rail */
+  .quote-line { display: flex; justify-content: space-between; gap: 1rem; font-size: .9rem; padding: .35rem 0; }
+  .quote-line span:first-child { color: var(--ink-faint); }
+  .quote-line span:last-child { text-align: right; font-weight: 600; }
+  .quote-total {
+    border-top: 2px solid var(--line-strong); margin-top: .8rem; padding-top: .8rem;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .quote-total .amt { font-family: var(--font-display); font-size: 1.9rem; color: var(--sindoor); line-height: 1; }
+  .quote-sub { font-size: .8rem; color: var(--ink-faint); text-align: right; }
+
+  .extras-grid { display: grid; gap: .7rem; }
+  .extra {
+    display: flex; gap: .8rem; align-items: flex-start; cursor: pointer;
+    border: 1.5px solid var(--line-strong); border-radius: 12px; padding: .8rem 1rem; background: #fffdf7;
+    transition: border-color .2s, background .2s;
+  }
+  .extra:hover { border-color: var(--brass); }
+  .extra.sel { border-color: var(--sindoor); background: rgba(164,35,44,.06); }
+  .extra input { margin-top: .35rem; accent-color: var(--sindoor); }
+  .extra .ex-price { margin-left: auto; font-weight: 700; color: var(--sindoor); white-space: nowrap; }
+
+  /* confirmation */
+  .receipt {
+    background: linear-gradient(150deg, var(--indigo-dk), #24406b);
+    color: #f3e9d7; border-radius: var(--radius-lg); padding: 2.2rem; text-align: center;
+    box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+  }
+  .receipt::after {
+    content: ''; position: absolute; inset: 0; opacity: .18; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='%23e2bb5c' stroke-width='1'%3E%3Ccircle cx='30' cy='30' r='12'/%3E%3Cpath d='M30 6 L54 30 L30 54 L6 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .receipt > * { position: relative; z-index: 1; }
+  .code-pill {
+    display: inline-block; font-family: ui-monospace, Consolas, monospace;
+    font-size: 1.9rem; letter-spacing: .18em; padding: .5rem 1.4rem;
+    background: rgba(255,250,240,.12); border: 1px solid rgba(226,187,92,.5);
+    border-radius: 12px; margin: .8rem 0;
+  }
+  .summary-list { display: grid; gap: .45rem; font-size: .92rem; }
+  .summary-list div { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px dashed var(--line); padding-bottom: .35rem; }
+  .summary-list div span:first-child { color: var(--ink-faint); }
+  .summary-list div span:last-child { text-align: right; font-weight: 600; }
+
+  @media (max-width: 980px) {
+    .order-layout { grid-template-columns: 1fr; }
+    .quote-rail { position: static; order: -1; }
+  }
+</style>
+</head>
+<body>
+<div class="prayer-strip"></div>
+
+<header class="site-head">
+  <div class="head-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="#fffaf0" stroke="#a4232c" stroke-width="2"/>
+        <g fill="none" stroke="#c39320" stroke-width="1.6">
+          <circle cx="32" cy="32" r="21"/><path d="M32 11 L48 32 L32 53 L16 32 Z"/><path d="M11 32 L32 16 L53 32 L32 48 Z"/>
+        </g>
+        <circle cx="32" cy="32" r="6" fill="#a4232c"/><circle cx="32" cy="32" r="2.4" fill="#e2bb5c"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-deva">कलाकुञ्ज</span>
+        <span class="brand-en">Kalakunja Art House</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="index.html#traditions">Traditions</a></li>
+      <li><a href="index.html#pricing">Pricing</a></li>
+      <li><a href="track.html">Track order</a></li>
+      <li><a class="btn btn-primary btn-sm" href="order.html">Commission</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="section" style="padding-top:2.6rem">
+  <div class="wrap">
+
+    <!-- ═══ WIZARD ═══════════════════════════════════════ -->
+    <div id="wizard">
+      <div class="center mb2">
+        <span class="eyebrow">Commission brief</span>
+        <h1 style="font-size:clamp(2rem,4.4vw,3rem)">Tell us what to paint <span class="deva">के बनाउने?</span></h1>
+        <p class="lede">Five short steps. The price updates as you choose, and nothing is charged until
+          you confirm the deposit with the studio desk.</p>
+      </div>
+
+      <ol class="stepper" id="stepper">
+        <li data-s="1"><div class="bar"><i></i></div><div class="lbl">Tradition</div></li>
+        <li data-s="2"><div class="bar"><i></i></div><div class="lbl">Canvas</div></li>
+        <li data-s="3"><div class="bar"><i></i></div><div class="lbl">Finish</div></li>
+        <li data-s="4"><div class="bar"><i></i></div><div class="lbl">The subject</div></li>
+        <li data-s="5"><div class="bar"><i></i></div><div class="lbl">Your details</div></li>
+      </ol>
+
+      <div class="order-layout">
+        <form class="panel" id="briefForm" novalidate>
+
+          <!-- Step 1 — tradition -->
+          <section class="step-panel on" data-step="1">
+            <div class="step-head">
+              <h2>Which tradition?</h2>
+              <p>Not sure? Pick the closest — the studio will advise before you pay anything.</p>
+            </div>
+            <div class="tiles tiles-2" id="styleTiles"></div>
+          </section>
+
+          <!-- Step 2 — canvas + medium -->
+          <section class="step-panel" data-step="2">
+            <div class="step-head">
+              <h2>Canvas and medium</h2>
+              <p>Size drives most of the price. Medium decides how the surface behaves over decades.</p>
+            </div>
+            <div class="field-label">Size</div>
+            <div class="tiles tiles-2 mb2" id="sizeTiles"></div>
+            <div class="field-label">Medium</div>
+            <div class="tiles tiles-2" id="mediumTiles"></div>
+          </section>
+
+          <!-- Step 3 — finish, timeline, extras -->
+          <section class="step-panel" data-step="3">
+            <div class="step-head">
+              <h2>Finish and timeline</h2>
+              <p>The finish grade sets which hand can take the brief; the timeline sets what we can promise.</p>
+            </div>
+            <div class="field-label">Finish grade</div>
+            <div class="tiles tiles-3 mb2" id="finishTiles"></div>
+            <div class="field-label">Timeline</div>
+            <div class="tiles tiles-2 mb2" id="timeTiles"></div>
+            <div class="field-label">Add to the commission</div>
+            <div class="extras-grid" id="extrasGrid"></div>
+          </section>
+
+          <!-- Step 4 — the subject -->
+          <section class="step-panel" data-step="4">
+            <div class="step-head">
+              <h2>The subject</h2>
+              <p>The more specific you are here, the fewer sketch rounds it takes.</p>
+            </div>
+            <label class="field">
+              <span class="field-label">Subject in one line <em style="color:var(--sindoor)">*</em></span>
+              <input type="text" id="f_subject" maxlength="140" placeholder="e.g. Green Tara for a meditation room, traditional blue-green ground" />
+              <span class="field-hint">This is the line our dispatch desk reads first.</span>
+            </label>
+            <label class="field">
+              <span class="field-label">Anything the painter should know</span>
+              <textarea id="f_notes" maxlength="1200" placeholder="Room and lighting, who it is for, colours to avoid, deadlines behind the deadline, references you love…"></textarea>
+            </label>
+            <div class="grid g2" style="gap:1rem">
+              <label class="field">
+                <span class="field-label">Palette leaning</span>
+                <select id="f_palette">
+                  <option>Traditional</option><option>Warm</option><option>Cool</option>
+                  <option>Earthy</option><option>Muted</option><option>Bright</option>
+                  <option>Monochrome</option><option>Let the studio decide</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field-label">Link to reference images</span>
+                <input type="text" id="f_ref" placeholder="Drive / Dropbox / photo album link" />
+                <span class="field-hint">Or email them to the studio quoting your order code.</span>
+              </label>
+            </div>
+          </section>
+
+          <!-- Step 5 — client details -->
+          <section class="step-panel" data-step="5">
+            <div class="step-head">
+              <h2>Where we reach you</h2>
+              <p>All correspondence runs through the studio desk — one thread, one contact.</p>
+            </div>
+            <div class="grid g2" style="gap:1rem">
+              <label class="field">
+                <span class="field-label">Full name <em style="color:var(--sindoor)">*</em></span>
+                <input type="text" id="f_name" autocomplete="name" />
+              </label>
+              <label class="field">
+                <span class="field-label">Email <em style="color:var(--sindoor)">*</em></span>
+                <input type="email" id="f_email" autocomplete="email" />
+              </label>
+              <label class="field">
+                <span class="field-label">Phone / WhatsApp</span>
+                <input type="tel" id="f_phone" autocomplete="tel" placeholder="+977 …" />
+              </label>
+              <label class="field">
+                <span class="field-label">Country</span>
+                <input type="text" id="f_country" autocomplete="country-name" placeholder="Nepal" />
+              </label>
+            </div>
+
+            <div class="panel card-flat" style="background:var(--surface-2);box-shadow:none;padding:1.2rem">
+              <div class="field-label">Your brief</div>
+              <div class="summary-list" id="finalSummary"></div>
+            </div>
+
+            <label class="row mt2" style="align-items:flex-start;gap:.6rem;font-size:.9rem;cursor:pointer">
+              <input type="checkbox" id="f_agree" style="width:auto;margin-top:.35rem;accent-color:var(--sindoor)" />
+              <span>I understand the work is placed with a member artist chosen by the studio, that the
+                artist's identity stays with the studio, and that a 40% deposit confirms the commission.</span>
+            </label>
+          </section>
+
+          <div class="nav-row">
+            <button type="button" class="btn btn-ghost" id="backBtn" disabled>← Back</button>
+            <button type="button" class="btn btn-primary" id="nextBtn">Continue →</button>
+          </div>
+        </form>
+
+        <!-- quote rail -->
+        <aside class="panel quote-rail">
+          <div class="row-between mb1">
+            <strong style="font-family:var(--font-display);font-size:1.2rem">Live estimate</strong>
+            <span class="chip chip-brass">No obligation</span>
+          </div>
+          <div id="quoteLines"></div>
+          <div class="quote-total">
+            <div>
+              <div style="font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)">Total</div>
+              <div class="amt" id="qTotal">रु 0</div>
+            </div>
+            <div class="quote-sub" id="qUsd"></div>
+          </div>
+          <div class="quote-line mt1"><span>40% deposit</span><span id="qDeposit">—</span></div>
+          <div class="quote-line"><span>Estimated hand-over</span><span id="qEta">—</span></div>
+          <div class="lattice mt2" style="opacity:.5"></div>
+          <p style="font-size:.82rem;color:var(--ink-faint);margin-top:.8rem">
+            Shipping quoted separately once the finished size and destination are confirmed.
+            Nepali clients: 13% VAT applies on invoices requiring a PAN bill.
+          </p>
+        </aside>
+      </div>
+    </div>
+
+    <!-- ═══ CONFIRMATION ═════════════════════════════════ -->
+    <div id="done" class="hide">
+      <div class="wrap-narrow" style="padding:0">
+        <div class="receipt">
+          <span style="font-family:var(--font-deva);color:#e2bb5c;font-size:1.2rem">धन्यवाद</span>
+          <h2 style="color:#f3e9d7;margin:.3rem 0 .2rem">Your brief is with the studio</h2>
+          <p style="opacity:.85;font-size:.95rem">Keep this code — it is how you track the commission.</p>
+          <div class="code-pill" id="doneCode">KK-XXXXX</div>
+          <p style="opacity:.85;font-size:.92rem;max-width:46ch;margin:0 auto">
+            Our dispatch desk reviews new briefs each morning and places the work within two working days.
+            You will hear from us at <b id="doneEmail"></b>.
+          </p>
+          <div class="row" style="justify-content:center;margin-top:1.5rem">
+            <a class="btn btn-brass" id="doneTrack" href="track.html">Track this commission</a>
+            <button class="btn btn-ghost" style="border-color:rgba(243,233,215,.5);color:#f3e9d7" id="copyCode">Copy code</button>
+          </div>
+        </div>
+
+        <div class="panel mt3">
+          <h3 class="mb1">What happens next</h3>
+          <ol class="timeline" style="margin-top:1rem" id="nextSteps"></ol>
+          <p class="muted" style="font-size:.88rem">
+            Questions in the meantime: <b>desk@kalakunja.com.np</b> · +977 1 5555 019, Sun–Fri 10:00–18:00 NPT.
+            Quote your order code in the subject line.
+          </p>
+        </div>
+        <p class="center mt2"><a class="btn btn-ghost" href="index.html">← Back to the studio</a></p>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="lattice"></div>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-bottom" style="margin-top:0;border-top:none;padding-top:0">
+      <span>© <span data-year></span> Kalakunja Art House · a COIN Pvt. Ltd. studio</span>
+      <span><a href="index.html">Home</a> · <a href="track.html">Track</a> · <a href="studio.html">Dispatch desk</a></span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+<script src="assets/js/kalakunja.js"></script>
+<script>
+(function () {
+  'use strict';
+  document.addEventListener('DOMContentLoaded', function () {
+
+    var state = {
+      step: 1,
+      style: 'paubha',
+      size: 'sm',
+      medium: 'acrylic',
+      finish: 'standard',
+      timeline: 'standard',
+      extras: []
+    };
+    var MAX = 5;
+
+    /* ── tile builders ─────────────────────────────────── */
+    function tile(group, item, title, sub, checked) {
+      return '<label class="tile' + (checked ? ' sel' : '') + '" data-group="' + group + '" data-id="' + item + '">' +
+        '<input type="radio" name="' + group + '" value="' + item + '"' + (checked ? ' checked' : '') + ' />' +
+        '<div class="tile-body"><div class="tile-title">' + title + '</div>' +
+        '<div class="tile-sub">' + sub + '</div></div></label>';
+    }
+
+    document.getElementById('styleTiles').innerHTML = KK.STYLES.map(function (s) {
+      return tile('style', s.id,
+        '<span>' + s.glyph + '</span> ' + KK.esc(s.name) +
+        ' <span style="font-family:var(--font-deva);color:var(--brass);font-size:.9rem">' + KK.esc(s.deva) + '</span>',
+        KK.esc(s.blurb), s.id === state.style);
+    }).join('');
+
+    document.getElementById('sizeTiles').innerHTML = KK.SIZES.map(function (z) {
+      return tile('size', z.id, KK.esc(z.label) + ' · <span class="mono" style="font-weight:400">' + KK.esc(z.dims) + '</span>',
+        'Base ' + KK.npr(z.base), z.id === state.size);
+    }).join('');
+
+    document.getElementById('mediumTiles').innerHTML = KK.MEDIUMS.map(function (m) {
+      return tile('medium', m.id, KK.esc(m.label), KK.esc(m.sub), m.id === state.medium);
+    }).join('');
+
+    document.getElementById('finishTiles').innerHTML = KK.FINISHES.map(function (f) {
+      return tile('finish', f.id, KK.esc(f.label), KK.esc(f.sub), f.id === state.finish);
+    }).join('');
+
+    document.getElementById('timeTiles').innerHTML = KK.TIMELINES.map(function (t) {
+      return tile('timeline', t.id, KK.esc(t.label) + ' · <span style="font-weight:400">' + KK.esc(t.sub) + '</span>',
+        t.mult > 1 ? 'Rush loading +' + Math.round((t.mult - 1) * 100) + '%'
+                   : (t.mult < 1 ? 'Saves ' + Math.round((1 - t.mult) * 100) + '%' : 'No loading'),
+        t.id === state.timeline);
+    }).join('');
+
+    document.getElementById('extrasGrid').innerHTML = KK.EXTRAS.map(function (x) {
+      return '<label class="extra" data-id="' + x.id + '">' +
+        '<input type="checkbox" value="' + x.id + '" />' +
+        '<span><b>' + KK.esc(x.label) + '</b><br /><span class="tile-sub">' + KK.esc(x.sub) + '</span></span>' +
+        '<span class="ex-price">' + KK.npr(x.price) + '</span></label>';
+    }).join('');
+
+    /* ── selection handling ────────────────────────────── */
+    document.getElementById('briefForm').addEventListener('change', function (e) {
+      var t = e.target;
+      if (t.type === 'radio') {
+        var group = t.name;
+        state[group] = t.value;
+        document.querySelectorAll('.tile[data-group="' + group + '"]').forEach(function (el) {
+          el.classList.toggle('sel', el.dataset.id === t.value);
+        });
+        repaintQuote();
+      } else if (t.type === 'checkbox' && t.closest('.extra')) {
+        var lab = t.closest('.extra');
+        lab.classList.toggle('sel', t.checked);
+        state.extras = Array.prototype.slice.call(
+          document.querySelectorAll('#extrasGrid input:checked')).map(function (i) { return i.value; });
+        repaintQuote();
+      }
+    });
+
+    /* ── live quote ────────────────────────────────────── */
+    function repaintQuote() {
+      var q = KK.quote(state);
+      var style = KK.byId(KK.STYLES, state.style);
+      var size = KK.byId(KK.SIZES, state.size);
+      var med = KK.byId(KK.MEDIUMS, state.medium);
+      var fin = KK.byId(KK.FINISHES, state.finish);
+      var tim = KK.byId(KK.TIMELINES, state.timeline);
+
+      var lines =
+        line('Tradition', style.name + ' ×' + style.mult) +
+        line('Canvas', size.label + ' · ' + size.dims) +
+        line('Medium', med.label.split(' on ')[0] + ' ×' + med.mult) +
+        line('Finish', fin.label + ' ×' + fin.mult) +
+        line('Timeline', tim.label + ' (' + tim.sub + ')') +
+        line('Painting', KK.npr(q.art));
+      state.extras.forEach(function (id) {
+        var x = KK.byId(KK.EXTRAS, id);
+        lines += line(x.label, KK.npr(x.price));
+      });
+      document.getElementById('quoteLines').innerHTML = lines;
+      document.getElementById('qTotal').textContent = KK.npr(q.total);
+      document.getElementById('qUsd').textContent = '≈ ' + KK.usd(q.total) + ' USD';
+      document.getElementById('qDeposit').textContent = KK.npr(q.deposit);
+      document.getElementById('qEta').textContent = KK.ktmDate(q.etaDate);
+      return q;
+    }
+    function line(a, b) {
+      return '<div class="quote-line"><span>' + KK.esc(a) + '</span><span>' + b + '</span></div>';
+    }
+
+    /* ── stepper ───────────────────────────────────────── */
+    function show(n) {
+      state.step = n;
+      document.querySelectorAll('.step-panel').forEach(function (p) {
+        p.classList.toggle('on', Number(p.dataset.step) === n);
+      });
+      document.querySelectorAll('#stepper li').forEach(function (li) {
+        var s = Number(li.dataset.s);
+        li.classList.toggle('done', s < n);
+        li.classList.toggle('active', s === n);
+      });
+      document.getElementById('backBtn').disabled = (n === 1);
+      document.getElementById('nextBtn').textContent = (n === MAX) ? 'Send the brief to the studio' : 'Continue →';
+      if (n === MAX) { renderFinalSummary(); }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function mark(el, bad) {
+      el.classList.toggle('invalid', !!bad);
+      if (bad) { el.focus(); }
+      return !bad;
+    }
+
+    function validate(n) {
+      if (n === 4) {
+        var subj = document.getElementById('f_subject');
+        if (!subj.value.trim()) {
+          mark(subj, true); KK.toast('Give us one line on the subject.'); return false;
+        }
+        mark(subj, false);
+      }
+      if (n === 5) {
+        var name = document.getElementById('f_name');
+        var email = document.getElementById('f_email');
+        if (!name.value.trim()) { mark(name, true); KK.toast('We need a name for the commission.'); return false; }
+        mark(name, false);
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+          mark(email, true); KK.toast('That email does not look right.'); return false;
+        }
+        mark(email, false);
+        if (!document.getElementById('f_agree').checked) {
+          KK.toast('Please tick the box so we can place the work.'); return false;
+        }
+      }
+      return true;
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', function () {
+      if (!validate(state.step)) { return; }
+      if (state.step < MAX) { show(state.step + 1); } else { submit(); }
+    });
+    document.getElementById('backBtn').addEventListener('click', function () {
+      if (state.step > 1) { show(state.step - 1); }
+    });
+    document.querySelectorAll('#stepper li').forEach(function (li) {
+      li.style.cursor = 'pointer';
+      li.addEventListener('click', function () {
+        var target = Number(li.dataset.s);
+        if (target <= state.step) { show(target); }
+      });
+    });
+
+    /* ── final summary ─────────────────────────────────── */
+    function renderFinalSummary() {
+      var q = KK.quote(state);
+      var rows = [
+        ['Tradition', KK.byId(KK.STYLES, state.style).name],
+        ['Canvas', KK.byId(KK.SIZES, state.size).label + ' · ' + KK.byId(KK.SIZES, state.size).dims],
+        ['Medium', KK.byId(KK.MEDIUMS, state.medium).label],
+        ['Finish', KK.byId(KK.FINISHES, state.finish).label],
+        ['Timeline', KK.byId(KK.TIMELINES, state.timeline).label + ' · ' + KK.byId(KK.TIMELINES, state.timeline).sub],
+        ['Subject', document.getElementById('f_subject').value.trim() || '—'],
+        ['Additions', state.extras.length ? state.extras.map(function (id) {
+          return KK.byId(KK.EXTRAS, id).label; }).join(', ') : 'None'],
+        ['Total', KK.npr(q.total) + ' (≈ ' + KK.usd(q.total) + ')'],
+        ['Deposit to confirm', KK.npr(q.deposit)]
+      ];
+      document.getElementById('finalSummary').innerHTML = rows.map(function (r) {
+        return '<div><span>' + KK.esc(r[0]) + '</span><span>' + KK.esc(r[1]) + '</span></div>';
+      }).join('');
+    }
+
+    /* ── submit ────────────────────────────────────────── */
+    function submit() {
+      var payload = {
+        client: {
+          name: document.getElementById('f_name').value.trim(),
+          email: document.getElementById('f_email').value.trim(),
+          phone: document.getElementById('f_phone').value.trim(),
+          country: document.getElementById('f_country').value.trim() || 'Nepal'
+        },
+        brief: {
+          style: state.style, size: state.size, medium: state.medium,
+          finish: state.finish, timeline: state.timeline, extras: state.extras.slice(),
+          subject: document.getElementById('f_subject').value.trim(),
+          notes: document.getElementById('f_notes').value.trim(),
+          palette: document.getElementById('f_palette').value,
+          reference: document.getElementById('f_ref').value.trim()
+        }
+      };
+      var o = KK.createOrder(payload);
+
+      document.getElementById('wizard').classList.add('hide');
+      var done = document.getElementById('done');
+      done.classList.remove('hide');
+      document.getElementById('doneCode').textContent = o.id;
+      document.getElementById('doneEmail').textContent = o.client.email;
+      document.getElementById('doneTrack').href = 'track.html?code=' + encodeURIComponent(o.id);
+
+      document.getElementById('nextSteps').innerHTML = [
+        ['Within 24 hours', 'A studio reader checks the brief for anything that needs a conversation — scale, iconography, shipping.'],
+        ['Within 2 working days', 'The dispatch desk places the work with a member artist and your tracking page updates.'],
+        ['Deposit', 'We send a deposit request for ' + KK.npr(o.quote.deposit) + '. Painting starts once it clears.'],
+        ['Sketch', 'You approve a sketch before pigment is laid. Two rounds of changes are included.'],
+        ['Hand-over', 'Estimated ' + KK.ktmDate(o.quote.etaDate) + ', with photographs at each milestone.']
+      ].map(function (s, i) {
+        return '<li class="' + (i === 0 ? 'current' : '') + '"><div class="t-title">' + KK.esc(s[0]) +
+          '</div><div class="t-meta">' + KK.esc(s[1]) + '</div></li>';
+      }).join('');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      KK.toast('Brief received — order ' + o.id);
+    }
+
+    document.getElementById('copyCode').addEventListener('click', function () {
+      var code = document.getElementById('doneCode').textContent;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(function () { KK.toast('Order code copied.'); },
+          function () { KK.toast('Copy it by hand: ' + code); });
+      } else { KK.toast('Copy it by hand: ' + code); }
+    });
+
+    /* deep link: order.html?style=thangka */
+    var pre = new URLSearchParams(location.search).get('style');
+    if (pre && KK.byId(KK.STYLES, pre)) {
+      state.style = pre;
+      document.querySelectorAll('.tile[data-group="style"]').forEach(function (el) {
+        var on = el.dataset.id === pre;
+        el.classList.toggle('sel', on);
+        el.querySelector('input').checked = on;
+      });
+    }
+
+    repaintQuote();
+    show(1);
+  });
+})();
+</script>
+</body>
+</html>

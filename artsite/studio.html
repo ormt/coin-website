@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dispatch desk · Kalakunja Art House</title>
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/kalakunja.css" />
+<style>
+  .desk-bar {
+    background: linear-gradient(135deg, var(--indigo-dk), #1c3f70);
+    color: #f0e6d4; border-radius: var(--radius-lg); padding: 1.4rem 1.6rem;
+    display: flex; justify-content: space-between; gap: 1.4rem; align-items: center; flex-wrap: wrap;
+  }
+  .desk-bar h1 { color: #fffaf0; font-size: 1.9rem; margin: 0; }
+  .desk-bar p { opacity: .8; font-size: .9rem; margin: 0; }
+
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+  .kpi { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.1rem; }
+  .kpi .n { font-family: var(--font-display); font-size: 2.1rem; line-height: 1; color: var(--sindoor); }
+  .kpi .l { font-size: .72rem; letter-spacing: .13em; text-transform: uppercase; color: var(--ink-faint); margin-top: .3rem; }
+  .kpi.blue .n { color: var(--indigo); }
+  .kpi.green .n { color: var(--malachite); }
+
+  .desk-grid { display: grid; grid-template-columns: 1fr 420px; gap: 1.4rem; align-items: start; }
+  .queue-item {
+    border: 1px solid var(--line); border-left: 4px solid var(--line-strong);
+    border-radius: 10px; padding: .85rem 1rem; background: var(--surface);
+    cursor: pointer; transition: border-color .2s, transform .15s, box-shadow .2s;
+  }
+  .queue-item:hover { transform: translateX(3px); box-shadow: var(--shadow-sm); }
+  .queue-item.sel { border-color: var(--sindoor); border-left-color: var(--sindoor); background: rgba(164,35,44,.05); }
+  .queue-item.urgent { border-left-color: var(--sindoor); }
+  .queue-item.unassigned { border-left-color: var(--brass); }
+  .queue-item.moving { border-left-color: var(--malachite); }
+  .qi-top { display: flex; justify-content: space-between; gap: .6rem; align-items: center; }
+  .qi-sub { font-size: .84rem; color: var(--ink-faint); margin-top: .2rem; }
+
+  .filters { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .filters button {
+    border: 1px solid var(--line-strong); background: transparent; border-radius: 999px;
+    padding: .32rem .85rem; font-size: .8rem; font-weight: 600; cursor: pointer; color: var(--ink-soft);
+  }
+  .filters button.on { background: var(--sindoor); border-color: var(--sindoor); color: #fff7ea; }
+
+  .detail-empty { text-align: center; color: var(--ink-faint); padding: 3rem 1rem; }
+
+  .match-row {
+    display: grid; grid-template-columns: 1fr auto; gap: .6rem; align-items: center;
+    border: 1px solid var(--line); border-radius: 10px; padding: .7rem .85rem; background: #fffdf7;
+  }
+  .match-row + .match-row { margin-top: .55rem; }
+  .match-row.best { border-color: var(--malachite); background: rgba(31,111,92,.06); }
+  .match-score { font-family: var(--font-display); font-size: 1.5rem; color: var(--malachite); line-height: 1; }
+  .match-why { font-size: .78rem; color: var(--ink-faint); margin-top: .25rem; }
+
+  .stage-pills { display: flex; gap: .3rem; flex-wrap: wrap; }
+  .stage-pills button {
+    border: 1px solid var(--line-strong); background: transparent; border-radius: 8px;
+    padding: .28rem .6rem; font-size: .74rem; cursor: pointer; color: var(--ink-soft);
+  }
+  .stage-pills button.on { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+  .stage-pills button.past { background: var(--surface-2); color: var(--ink-faint); }
+
+  .roster-row { display: grid; grid-template-columns: 1fr 92px; gap: .8rem; align-items: center; padding: .6rem 0; border-bottom: 1px solid var(--line); }
+  .roster-row:last-child { border-bottom: none; }
+  .roster-name { font-weight: 700; }
+  .roster-meta { font-size: .78rem; color: var(--ink-faint); }
+
+  .log { list-style: none; font-size: .85rem; display: grid; gap: .5rem; max-height: 220px; overflow-y: auto; }
+  .log li { border-left: 2px solid var(--line-strong); padding-left: .7rem; }
+  .log .when { color: var(--ink-faint); font-size: .76rem; }
+
+  .privacy-note {
+    background: rgba(195,147,32,.12); border: 1px dashed rgba(195,147,32,.5);
+    border-radius: 10px; padding: .7rem .9rem; font-size: .83rem; color: #6d5310;
+  }
+  @media (max-width: 1040px) { .desk-grid { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<div class="prayer-strip"></div>
+
+<header class="site-head">
+  <div class="head-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="#fffaf0" stroke="#a4232c" stroke-width="2"/>
+        <g fill="none" stroke="#c39320" stroke-width="1.6">
+          <circle cx="32" cy="32" r="21"/><path d="M32 11 L48 32 L32 53 L16 32 Z"/><path d="M11 32 L32 16 L53 32 L32 48 Z"/>
+        </g>
+        <circle cx="32" cy="32" r="6" fill="#a4232c"/><circle cx="32" cy="32" r="2.4" fill="#e2bb5c"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-deva">कलाकुञ्ज</span>
+        <span class="brand-en">Dispatch desk</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Public site</a></li>
+      <li><a href="studio.html">Dispatch</a></li>
+      <li><a href="artist.html">Artist portal</a></li>
+      <li><a href="track.html">Client view</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="section" style="padding-top:2rem">
+  <div class="wrap">
+
+    <div class="desk-bar mb2">
+      <div>
+        <span style="font-family:var(--font-deva);color:#e2bb5c;font-size:1.05rem">कार्य विभाजन कक्ष</span>
+        <h1>Dispatch desk</h1>
+        <p>Internal — commissions, matching and the member roster. Client pages never expose an artist's identity.</p>
+      </div>
+      <div class="row">
+        <button class="btn btn-brass btn-sm" id="autoAll">Auto-place all unassigned</button>
+        <button class="btn btn-ghost btn-sm" style="border-color:rgba(240,230,212,.45);color:#f0e6d4" id="resetBtn">Reset demo data</button>
+      </div>
+    </div>
+
+    <div class="kpis mb2" id="kpis"></div>
+
+    <div class="desk-grid">
+      <!-- ── queue ─────────────────────────────────── -->
+      <section class="panel">
+        <div class="row-between mb1">
+          <h2 style="font-size:1.4rem;margin:0">Commission queue</h2>
+          <span class="muted" style="font-size:.85rem" id="queueCount"></span>
+        </div>
+        <div class="filters" id="filters">
+          <button data-f="all" class="on">All</button>
+          <button data-f="unassigned">Needs a hand</button>
+          <button data-f="active">In the studio</button>
+          <button data-f="rush">Rush</button>
+          <button data-f="delivered">Delivered</button>
+        </div>
+        <div class="stack" id="queue"></div>
+      </section>
+
+      <!-- ── side column ───────────────────────────── -->
+      <div class="stack">
+        <section class="panel" id="detail">
+          <div class="detail-empty">
+            <div style="font-size:2rem">☸️</div>
+            <p class="mt1">Select a commission to place it with a member artist.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="row-between mb1">
+            <h2 style="font-size:1.25rem;margin:0">Member roster</h2>
+            <span class="chip chip-blue" id="rosterLoad">—</span>
+          </div>
+          <div class="privacy-note mb1">
+            Names, towns and numbers on this page stay inside the studio. Clients see only
+            <b>handle · grade · atelier</b>.
+          </div>
+          <div id="roster"></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="lattice"></div>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-bottom" style="margin-top:0;border-top:none;padding-top:0">
+      <span>© <span data-year></span> Kalakunja Art House · internal desk</span>
+      <span><a href="index.html">Public site</a> · <a href="artist.html">Artist portal</a></span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+<script src="assets/js/kalakunja.js"></script>
+<script>
+(function () {
+  'use strict';
+  document.addEventListener('DOMContentLoaded', function () {
+
+    var filter = 'all';
+    var selected = null;
+
+    /* ── KPIs ──────────────────────────────────────────── */
+    function renderKpis() {
+      var all = KK.orders();
+      var open = all.filter(function (o) { return o.status !== 'delivered'; });
+      var unassigned = open.filter(function (o) { return !o.assignedTo; });
+      var soon = open.filter(function (o) {
+        var d = (new Date(o.quote.etaDate) - new Date()) / 86400000;
+        return d <= 14;
+      });
+      var value = open.reduce(function (s, o) { return s + o.quote.total; }, 0);
+      var roster = KK.artists();
+      var cap = roster.reduce(function (s, a) { return s + a.capacity; }, 0);
+      var load = roster.reduce(function (s, a) { return s + KK.loadOf(a.id); }, 0);
+
+      document.getElementById('kpis').innerHTML =
+        kpi(open.length, 'Open commissions', '') +
+        kpi(unassigned.length, 'Awaiting a hand', unassigned.length ? '' : 'green') +
+        kpi(soon.length, 'Due within 14 days', 'blue') +
+        kpi(Math.round(load / Math.max(1, cap) * 100) + '%', 'Roster utilisation', 'blue') +
+        kpi(KK.npr(value).replace('रु ', ''), 'Open book (NPR)', 'green');
+
+      document.getElementById('rosterLoad').textContent = load + ' / ' + cap + ' slots in use';
+    }
+    function kpi(n, l, cls) {
+      return '<div class="kpi ' + (cls || '') + '"><div class="n">' + n + '</div><div class="l">' + l + '</div></div>';
+    }
+
+    /* ── queue ─────────────────────────────────────────── */
+    function passes(o) {
+      if (filter === 'all') { return o.status !== 'delivered'; }
+      if (filter === 'unassigned') { return !o.assignedTo && o.status !== 'delivered'; }
+      if (filter === 'active') { return o.assignedTo && o.status !== 'delivered'; }
+      if (filter === 'rush') { return ['priority', 'express'].indexOf(o.brief.timeline) !== -1 && o.status !== 'delivered'; }
+      if (filter === 'delivered') { return o.status === 'delivered'; }
+      return true;
+    }
+
+    function renderQueue() {
+      var list = KK.orders().filter(passes);
+      document.getElementById('queueCount').textContent = list.length + ' shown';
+      if (!list.length) {
+        document.getElementById('queue').innerHTML =
+          '<p class="muted center" style="padding:2rem 0">Nothing in this bucket.</p>';
+        return;
+      }
+      document.getElementById('queue').innerHTML = list.map(function (o) {
+        var st = KK.byId(KK.STYLES, o.brief.style);
+        var tim = KK.byId(KK.TIMELINES, o.brief.timeline);
+        var days = Math.round((new Date(o.quote.etaDate) - new Date()) / 86400000);
+        var hand = o.assignedTo ? KK.artist(o.assignedTo) : null;
+        var cls = !o.assignedTo ? 'unassigned' : (days < 7 ? 'urgent' : 'moving');
+        return '<div class="queue-item ' + cls + (selected === o.id ? ' sel' : '') + '" data-id="' + o.id + '">' +
+          '<div class="qi-top">' +
+            '<div><b>' + KK.esc(o.brief.subject || st.name) + '</b>' +
+              '<div class="qi-sub"><span class="mono">' + o.id + '</span> · ' + KK.esc(st.name) +
+              ' · ' + KK.esc(o.client.name) + ' (' + KK.esc(o.client.country) + ')</div></div>' +
+            '<div style="text-align:right">' +
+              '<span class="chip chip-' + (o.assignedTo ? 'green' : 'brass') + '">' +
+                (hand ? KK.esc(hand.handle) : 'Unplaced') + '</span>' +
+              '<div class="qi-sub">' + KK.esc(KK.STAGES[KK.stageIndex(o.status)].label) + '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="row" style="margin-top:.5rem;gap:.4rem">' +
+            '<span class="chip chip-' + (tim.days <= 21 ? 'red' : 'blue') + '">' + KK.esc(tim.label) + '</span>' +
+            '<span class="chip">' + KK.npr(o.quote.total) + '</span>' +
+            '<span class="chip ' + (days < 7 ? 'chip-red' : '') + '">' +
+              (days >= 0 ? days + ' days left' : Math.abs(days) + ' days over') + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    document.getElementById('queue').addEventListener('click', function (e) {
+      var item = e.target.closest('.queue-item');
+      if (!item) { return; }
+      selected = item.dataset.id;
+      renderQueue();
+      renderDetail();
+    });
+
+    document.getElementById('filters').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-f]');
+      if (!b) { return; }
+      filter = b.dataset.f;
+      document.querySelectorAll('#filters button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      renderQueue();
+    });
+
+    /* ── detail + matching ─────────────────────────────── */
+    function renderDetail() {
+      var el = document.getElementById('detail');
+      if (!selected) { return; }
+      var o = KK.order(selected);
+      if (!o) { selected = null; return; }
+
+      var st = KK.byId(KK.STYLES, o.brief.style);
+      var size = KK.byId(KK.SIZES, o.brief.size);
+      var fin = KK.byId(KK.FINISHES, o.brief.finish);
+      var tim = KK.byId(KK.TIMELINES, o.brief.timeline);
+      var idx = KK.stageIndex(o.status);
+      var hand = o.assignedTo ? KK.artist(o.assignedTo) : null;
+      var scores = KK.matchScores(o);
+      var top = scores.slice(0, 4);
+
+      el.innerHTML =
+        '<div class="row-between mb1">' +
+          '<h2 style="font-size:1.3rem;margin:0">' + KK.esc(o.brief.subject || st.name) + '</h2>' +
+          '<span class="chip chip-brass mono">' + o.id + '</span>' +
+        '</div>' +
+        '<p class="muted" style="font-size:.88rem">' + KK.esc(st.name) + ' · ' + KK.esc(size.dims) + ' · ' +
+          KK.esc(fin.label) + ' · ' + KK.esc(tim.label) + ' (' + KK.esc(tim.sub) + ')</p>' +
+
+        '<div class="kv" style="display:grid;gap:.35rem;font-size:.86rem;margin-top:.8rem">' +
+          row('Client', o.client.name + ' · ' + o.client.country) +
+          row('Contact', o.client.email + (o.client.phone ? ' · ' + o.client.phone : '')) +
+          row('Value', KK.npr(o.quote.total) + ' · deposit ' + KK.npr(o.quote.deposit)) +
+          row('Hand-over', KK.ktmDate(o.quote.etaDate)) +
+        '</div>' +
+
+        (o.brief.notes ? '<p style="font-size:.86rem;background:var(--surface-2);border-radius:8px;padding:.6rem .8rem;margin-top:.8rem">' +
+          '<b>Client note:</b> ' + KK.esc(o.brief.notes) + '</p>' : '') +
+
+        '<h3 style="font-size:1.05rem;margin-top:1.3rem">Placement</h3>' +
+        (hand
+          ? '<div class="match-row best" style="margin-top:.5rem">' +
+              '<div><b>' + KK.esc(hand.name) + '</b> <span class="chip chip-green">' + KK.esc(hand.handle) + '</span>' +
+                '<div class="match-why">' + KK.esc(KK.TIERS[hand.tier].label) + ' · ' + KK.esc(hand.town) +
+                ' · carrying ' + KK.loadOf(hand.id) + ' of ' + hand.capacity + '</div></div>' +
+              '<button class="btn btn-ghost btn-sm" data-act="unassign">Re-place</button>' +
+            '</div>'
+          : '<p class="muted" style="font-size:.86rem;margin:.4rem 0">Not yet placed. Ranked against the roster:</p>') +
+
+        (hand ? '' : '<div class="mt1">' + top.map(function (m, i) {
+          var full = m.free <= 0;
+          return '<div class="match-row' + (i === 0 && !full ? ' best' : '') + '">' +
+            '<div><b>' + KK.esc(m.artist.name) + '</b> ' +
+              '<span class="chip">' + KK.esc(m.artist.handle) + '</span> ' +
+              '<span class="chip chip-' + (m.artist.tier === 'master' ? 'plum' : (m.artist.tier === 'senior' ? 'blue' : '')) + '">' +
+                KK.esc(KK.TIERS[m.artist.tier].label) + '</span>' +
+              '<div class="match-why">' + KK.esc(m.reasons.join(' · ')) + '</div>' +
+              '<div class="meter meter-green" style="margin-top:.4rem"><span style="width:' + m.score + '%"></span></div>' +
+            '</div>' +
+            '<div style="text-align:center">' +
+              '<div class="match-score">' + m.score + '</div>' +
+              '<button class="btn btn-primary btn-sm" style="margin-top:.35rem" data-act="assign" data-artist="' +
+                m.artist.id + '"' + (full ? ' disabled title="At capacity"' : '') + '>Place</button>' +
+            '</div>' +
+          '</div>';
+        }).join('') + '</div>') +
+
+        '<h3 style="font-size:1.05rem;margin-top:1.3rem">Move the stage</h3>' +
+        '<div class="stage-pills mt1">' + KK.STAGES.map(function (s, i) {
+          return '<button data-act="stage" data-stage="' + s.id + '" class="' +
+            (i === idx ? 'on' : (i < idx ? 'past' : '')) + '">' + KK.esc(s.label) + '</button>';
+        }).join('') + '</div>' +
+        (o.assignedTo ? '' : '<p class="muted" style="font-size:.8rem;margin-top:.5rem">Place the work with a hand before moving past “Brief review”.</p>') +
+
+        '<h3 style="font-size:1.05rem;margin-top:1.3rem">Log</h3>' +
+        '<ul class="log mt1">' + (o.events || []).slice().reverse().map(function (ev) {
+          return '<li><div class="when">' + KK.ktm(ev.at) + ' · ' + KK.esc(ev.actor || 'Studio') + '</div>' +
+            KK.esc(ev.note) + '</li>';
+        }).join('') + '</ul>';
+    }
+    function row(a, b) {
+      return '<div style="display:flex;justify-content:space-between;gap:1rem;border-bottom:1px dashed var(--line);padding-bottom:.3rem">' +
+        '<span class="muted">' + KK.esc(a) + '</span><span style="text-align:right;font-weight:600">' + KK.esc(b) + '</span></div>';
+    }
+
+    document.getElementById('detail').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-act]');
+      if (!b || !selected) { return; }
+      var act = b.dataset.act;
+
+      if (act === 'assign') {
+        KK.assign(selected, b.dataset.artist);
+        var a = KK.artist(b.dataset.artist);
+        KK.toast('Placed with ' + a.handle + ' (' + a.name + ').');
+      } else if (act === 'unassign') {
+        KK.updateOrder(selected, { assignedTo: null });
+        KK.addEvent(selected, 'review', 'Returned to the dispatch desk for re-placement.', 'Dispatch desk');
+        KK.toast('Returned to the desk.');
+      } else if (act === 'stage') {
+        var o = KK.order(selected);
+        var target = b.dataset.stage;
+        if (!o.assignedTo && KK.stageIndex(target) > 1) {
+          KK.toast('Place the work with a hand first.');
+          return;
+        }
+        var label = KK.STAGES[KK.stageIndex(target)].label;
+        KK.addEvent(selected, target, label + ' — set by the dispatch desk.', 'Dispatch desk');
+        KK.toast('Moved to ' + label + '.');
+      }
+      renderAll();
+    });
+
+    /* ── roster ────────────────────────────────────────── */
+    function renderRoster() {
+      document.getElementById('roster').innerHTML = KK.artists().map(function (a) {
+        var load = KK.loadOf(a.id);
+        var pct = Math.min(100, Math.round(load / a.capacity * 100));
+        var ateliers = a.ateliers.map(function (id) {
+          var s = KK.byId(KK.STYLES, id); return s ? s.name : id;
+        }).join(', ');
+        return '<div class="roster-row">' +
+          '<div>' +
+            '<div class="roster-name">' + KK.esc(a.name) +
+              ' <span class="chip">' + KK.esc(a.handle) + '</span></div>' +
+            '<div class="roster-meta">' + KK.esc(KK.TIERS[a.tier].label) + ' · ' + KK.esc(a.town) +
+              ' · ★ ' + a.rating.toFixed(2) + '</div>' +
+            '<div class="roster-meta">' + KK.esc(ateliers) + '</div>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<div style="font-weight:700;font-size:.9rem">' + load + '/' + a.capacity + '</div>' +
+            '<div class="meter ' + (pct >= 100 ? '' : 'meter-green') + '" style="margin-top:.3rem"><span style="width:' + pct + '%"></span></div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+
+    /* ── bulk auto-place ───────────────────────────────── */
+    document.getElementById('autoAll').addEventListener('click', function () {
+      var placed = 0;
+      KK.orders().forEach(function (o) {
+        if (o.assignedTo || o.status === 'delivered') { return; }
+        var best = KK.matchScores(o).filter(function (m) { return m.free > 0; })[0];
+        if (best) {
+          KK.assign(o.id, best.artist.id,
+            'Auto-placed with ' + best.artist.handle + ' — match score ' + best.score + '/100.');
+          placed++;
+        }
+      });
+      KK.toast(placed ? 'Placed ' + placed + ' commission' + (placed > 1 ? 's' : '') + '.' : 'Nothing to place — roster is full.');
+      renderAll();
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', function () {
+      KK.resetAll();
+      selected = null;
+      document.getElementById('detail').innerHTML =
+        '<div class="detail-empty"><div style="font-size:2rem">☸️</div>' +
+        '<p class="mt1">Demo data restored. Select a commission to place it.</p></div>';
+      KK.toast('Demo data reset.');
+      renderAll();
+    });
+
+    function renderAll() { renderKpis(); renderQueue(); renderDetail(); renderRoster(); }
+    renderAll();
+  });
+})();
+</script>
+</body>
+</html>
