@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Artist portal · Kalakunja Art House</title>
+<meta name="robots" content="noindex" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/kalakunja.css" />
+<style>
+  .signin { max-width: 520px; margin: 0 auto; }
+  .who { display: grid; gap: .5rem; }
+  .who button {
+    text-align: left; background: #fffdf7; border: 1.5px solid var(--line-strong);
+    border-radius: 10px; padding: .7rem .9rem; cursor: pointer; transition: border-color .2s, transform .15s;
+  }
+  .who button:hover { border-color: var(--sindoor); transform: translateX(3px); }
+  .who .nm { font-weight: 700; }
+  .who .mt { font-size: .8rem; color: var(--ink-faint); }
+
+  .artist-bar {
+    background: linear-gradient(135deg, #3b1f2b, var(--plum));
+    color: #f3e4ee; border-radius: var(--radius-lg); padding: 1.5rem 1.7rem;
+    display: flex; justify-content: space-between; gap: 1.4rem; align-items: center; flex-wrap: wrap;
+  }
+  .artist-bar h1 { color: #fff6ee; margin: 0; font-size: 1.85rem; }
+  .artist-bar p { margin: 0; opacity: .82; font-size: .9rem; }
+  .seal {
+    width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center;
+    border: 2px solid rgba(226,187,92,.7); color: #e2bb5c;
+    font-family: var(--font-display); font-size: 1.4rem;
+  }
+
+  .brief-card { border-left: 4px solid var(--brass); }
+  .brief-card.mine { border-left-color: var(--malachite); }
+  .redact {
+    background: var(--surface-2); color: var(--ink-faint); border-radius: 4px;
+    padding: 0 .4rem; font-size: .85rem; letter-spacing: .05em;
+  }
+  .work-actions { display: flex; gap: .4rem; flex-wrap: wrap; margin-top: .9rem; }
+  .kv2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem 1.2rem; font-size: .88rem; margin-top: .8rem; }
+  .kv2 div span:first-child { color: var(--ink-faint); display: block; font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; }
+  .kv2 div span:last-child { font-weight: 600; }
+  @media (max-width: 720px) { .kv2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="prayer-strip"></div>
+
+<header class="site-head">
+  <div class="head-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="#fffaf0" stroke="#a4232c" stroke-width="2"/>
+        <g fill="none" stroke="#c39320" stroke-width="1.6">
+          <circle cx="32" cy="32" r="21"/><path d="M32 11 L48 32 L32 53 L16 32 Z"/><path d="M11 32 L32 16 L53 32 L32 48 Z"/>
+        </g>
+        <circle cx="32" cy="32" r="6" fill="#a4232c"/><circle cx="32" cy="32" r="2.4" fill="#e2bb5c"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-deva">कलाकुञ्ज</span>
+        <span class="brand-en">Artist portal</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Public site</a></li>
+      <li><a href="studio.html">Dispatch</a></li>
+      <li><a href="artist.html">Artist portal</a></li>
+      <li><a href="#" id="signOut">Sign out</a></li>
+    </ul>
+  </div>
+</header>
+
+<main class="section" style="padding-top:2.2rem">
+  <div class="wrap">
+
+    <!-- ═══ SIGN IN ═══════════════════════════════════════ -->
+    <section id="signin">
+      <div class="center mb2">
+        <span class="eyebrow">Members only</span>
+        <h1 style="font-size:clamp(1.9rem,4vw,2.8rem)">Artist portal <span class="deva">कलाकार कक्ष</span></h1>
+        <p class="lede">Your assigned briefs, your milestones, your studio fee. Demo PINs are shown below
+          each name.</p>
+      </div>
+      <div class="signin panel">
+        <div class="field-label">Who is signing in?</div>
+        <div class="who" id="whoList"></div>
+        <label class="field mt2">
+          <span class="field-label">PIN</span>
+          <input type="password" id="pinInput" inputmode="numeric" maxlength="4" placeholder="••••" />
+        </label>
+        <button class="btn btn-primary" id="signInBtn" style="width:100%">Enter the studio</button>
+        <p class="muted mt1" style="font-size:.82rem">
+          A demo portal — nothing here leaves your browser. In production this sits behind the studio's
+          single sign-on.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══ DASHBOARD ═════════════════════════════════════ -->
+    <section id="dash" class="hide">
+      <div class="artist-bar mb2">
+        <div class="row" style="gap:1.1rem">
+          <div class="seal" id="seal">—</div>
+          <div>
+            <span style="font-family:var(--font-deva);color:#e2bb5c;font-size:1rem" id="greet">नमस्ते</span>
+            <h1 id="artistName">—</h1>
+            <p id="artistMeta">—</p>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-display);font-size:2.2rem;line-height:1" id="loadNum">0/0</div>
+          <div style="font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;opacity:.75">Briefs in hand</div>
+        </div>
+      </div>
+
+      <div class="grid g3 mb2" id="artistKpis"></div>
+
+      <div class="row-between mb1">
+        <h2 style="font-size:1.5rem;margin:0">Your bench</h2>
+        <span class="muted" style="font-size:.86rem">Client identities are held by the studio desk.</span>
+      </div>
+      <div class="stack" id="myWork"></div>
+
+      <h2 style="font-size:1.5rem;margin:2.4rem 0 .8rem">Open in your ateliers</h2>
+      <p class="muted mb1" style="font-size:.9rem">Unplaced briefs the desk may route to you. Flag interest and
+        the dispatch desk will weigh it against the roster.</p>
+      <div class="stack" id="openWork"></div>
+    </section>
+
+  </div>
+</main>
+
+<div class="lattice"></div>
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-bottom" style="margin-top:0;border-top:none;padding-top:0">
+      <span>© <span data-year></span> Kalakunja Art House · members' portal</span>
+      <span><a href="index.html">Public site</a> · <a href="studio.html">Dispatch desk</a></span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+<script src="assets/js/kalakunja.js"></script>
+<script>
+(function () {
+  'use strict';
+  document.addEventListener('DOMContentLoaded', function () {
+
+    var SESSION = 'kk.artist.session';
+    var chosen = null;
+    var me = null;
+
+    /* ── sign-in ───────────────────────────────────────── */
+    function renderWho() {
+      document.getElementById('whoList').innerHTML = KK.artists().map(function (a) {
+        return '<button data-id="' + a.id + '">' +
+          '<div class="nm">' + KK.esc(a.name) + ' <span class="chip">' + KK.esc(a.handle) + '</span></div>' +
+          '<div class="mt">' + KK.esc(KK.TIERS[a.tier].label) + ' · ' +
+            KK.esc(a.ateliers.map(function (s) { return KK.byId(KK.STYLES, s).name; }).join(', ')) +
+            ' · PIN ' + KK.esc(a.pin) + '</div>' +
+        '</button>';
+      }).join('');
+    }
+
+    document.getElementById('whoList').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-id]');
+      if (!b) { return; }
+      chosen = b.dataset.id;
+      document.querySelectorAll('#whoList button').forEach(function (x) {
+        x.style.borderColor = (x === b) ? 'var(--sindoor)' : '';
+        x.style.background = (x === b) ? 'rgba(164,35,44,.06)' : '';
+      });
+      document.getElementById('pinInput').focus();
+    });
+
+    document.getElementById('signInBtn').addEventListener('click', function () {
+      if (!chosen) { KK.toast('Pick your name first.'); return; }
+      var a = KK.artist(chosen);
+      if (document.getElementById('pinInput').value.trim() !== a.pin) {
+        KK.toast('That PIN does not match.'); return;
+      }
+      try { sessionStorage.setItem(SESSION, chosen); } catch (err) { /* non-fatal */ }
+      me = a;
+      openDash();
+    });
+
+    document.getElementById('signOut').addEventListener('click', function (e) {
+      e.preventDefault();
+      try { sessionStorage.removeItem(SESSION); } catch (err) { /* non-fatal */ }
+      me = null; chosen = null;
+      document.getElementById('dash').classList.add('hide');
+      document.getElementById('signin').classList.remove('hide');
+      document.getElementById('pinInput').value = '';
+      KK.toast('Signed out.');
+    });
+
+    /* ── dashboard ─────────────────────────────────────── */
+    function openDash() {
+      document.getElementById('signin').classList.add('hide');
+      document.getElementById('dash').classList.remove('hide');
+      renderDash();
+    }
+
+    function renderDash() {
+      me = KK.artist(me.id);
+      document.getElementById('seal').textContent = me.handle.replace('Hand No. ', '');
+      document.getElementById('artistName').textContent = me.name;
+      document.getElementById('artistMeta').textContent =
+        me.handle + ' · ' + KK.TIERS[me.tier].label + ' · ' +
+        me.ateliers.map(function (s) { return KK.byId(KK.STYLES, s).name; }).join(', ') +
+        ' · with the studio since ' + me.since;
+
+      var mine = KK.orders().filter(function (o) { return o.assignedTo === me.id; });
+      var live = mine.filter(function (o) { return o.status !== 'delivered'; });
+      document.getElementById('loadNum').textContent = live.length + '/' + me.capacity;
+
+      /* Studio fee: members are paid a fixed 45% of the painting line,
+         irrespective of what the client negotiated on extras or freight. */
+      var earned = mine.reduce(function (s, o) { return s + Math.round(o.quote.art * 0.45); }, 0);
+      var delivered = mine.filter(function (o) { return o.status === 'delivered'; }).length;
+
+      document.getElementById('artistKpis').innerHTML =
+        card(live.length, 'Live briefs') +
+        card(delivered, 'Delivered through the studio') +
+        card(KK.npr(earned), 'Studio fee on the books');
+
+      document.getElementById('myWork').innerHTML = live.length
+        ? live.map(workCard).join('')
+        : '<div class="panel center muted">Nothing on your bench. The desk will route work as it comes in.</div>';
+
+      var open = KK.orders().filter(function (o) {
+        return !o.assignedTo && o.status !== 'delivered' && me.ateliers.indexOf(o.brief.style) !== -1;
+      });
+      document.getElementById('openWork').innerHTML = open.length
+        ? open.map(function (o) { return workCard(o, true); }).join('')
+        : '<div class="panel center muted">No unplaced briefs in your ateliers right now.</div>';
+    }
+
+    function card(n, l) {
+      return '<div class="card card-flat"><div class="big-num">' + n + '</div>' +
+        '<div class="muted" style="font-size:.76rem;letter-spacing:.13em;text-transform:uppercase;margin-top:.3rem">' +
+        KK.esc(l) + '</div></div>';
+    }
+
+    /* An artist sees the brief and the deadline — never the client's
+       name, email or phone. Symmetric to what the client sees of them. */
+    function workCard(o, isOpen) {
+      var st = KK.byId(KK.STYLES, o.brief.style);
+      var size = KK.byId(KK.SIZES, o.brief.size);
+      var med = KK.byId(KK.MEDIUMS, o.brief.medium);
+      var fin = KK.byId(KK.FINISHES, o.brief.finish);
+      var tim = KK.byId(KK.TIMELINES, o.brief.timeline);
+      var idx = KK.stageIndex(o.status);
+      var days = Math.round((new Date(o.quote.etaDate) - new Date()) / 86400000);
+      var fee = Math.round(o.quote.art * 0.45);
+
+      var stages = ['sketch', 'painting', 'qc', 'ready'];
+      var actions = isOpen
+        ? '<button class="btn btn-ghost btn-sm" data-act="interest" data-id="' + o.id + '">Flag interest</button>'
+        : stages.map(function (s) {
+            var si = KK.stageIndex(s);
+            var cls = si === idx ? 'btn-primary' : 'btn-ghost';
+            return '<button class="btn ' + cls + ' btn-sm" data-act="stage" data-stage="' + s + '" data-id="' +
+              o.id + '"' + (si === idx ? ' disabled' : '') + '>' +
+              KK.esc(KK.STAGES[si].label) + '</button>';
+          }).join('') +
+          '<button class="btn btn-brass btn-sm" data-act="note" data-id="' + o.id + '">Post an update</button>';
+
+      return '<article class="card card-flat brief-card' + (isOpen ? '' : ' mine') + '">' +
+        '<div class="row-between">' +
+          '<div>' +
+            '<h3 style="margin:0">' + KK.esc(o.brief.subject || st.name + ' commission') + '</h3>' +
+            '<div class="muted" style="font-size:.85rem"><span class="mono">' + o.id + '</span> · ' +
+              KK.esc(st.name) + ' · commissioned by <span class="redact">held by the desk</span></div>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<span class="chip chip-' + (days < 7 ? 'red' : 'blue') + '">' +
+              (days >= 0 ? days + ' days left' : Math.abs(days) + ' days over') + '</span>' +
+            '<div class="muted" style="font-size:.8rem;margin-top:.25rem">' +
+              KK.esc(KK.STAGES[idx].label) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="kv2">' +
+          '<div><span>Canvas</span><span>' + KK.esc(size.label + ' · ' + size.dims) + '</span></div>' +
+          '<div><span>Medium</span><span>' + KK.esc(med.label) + '</span></div>' +
+          '<div><span>Finish</span><span>' + KK.esc(fin.label) + '</span></div>' +
+          '<div><span>Timeline</span><span>' + KK.esc(tim.label + ' · ' + tim.sub) + '</span></div>' +
+          '<div><span>Palette</span><span>' + KK.esc(o.brief.palette || '—') + '</span></div>' +
+          '<div><span>Your studio fee</span><span>' + KK.npr(fee) + '</span></div>' +
+        '</div>' +
+        (o.brief.notes ? '<p style="font-size:.88rem;background:var(--surface-2);border-radius:8px;padding:.6rem .8rem;margin-top:.8rem">' +
+          '<b>From the brief:</b> ' + KK.esc(o.brief.notes) + '</p>' : '') +
+        '<div class="meter mt1"><span style="width:' + Math.round(idx / (KK.STAGES.length - 1) * 100) + '%"></span></div>' +
+        '<div class="work-actions">' + actions + '</div>' +
+      '</article>';
+    }
+
+    /* ── actions ───────────────────────────────────────── */
+    document.getElementById('dash').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-act]');
+      if (!b) { return; }
+      var id = b.dataset.id;
+
+      if (b.dataset.act === 'stage') {
+        var label = KK.STAGES[KK.stageIndex(b.dataset.stage)].label;
+        KK.addEvent(id, b.dataset.stage, label + ' — logged by ' + me.handle + '.', me.handle);
+        KK.toast('Moved ' + id + ' to ' + label + '.');
+        renderDash();
+
+      } else if (b.dataset.act === 'note') {
+        var text = window.prompt('Update for the client (they see this on their tracking page — no names, please):');
+        if (!text) { return; }
+        var o = KK.order(id);
+        o.events = o.events || [];
+        o.events.push({
+          at: new Date().toISOString(), stage: o.status,
+          note: 'Progress note from ' + me.handle + ': ' + text,
+          clientNote: text.trim(),
+          actor: me.handle
+        });
+        KK.updateOrder(id, { events: o.events });
+        KK.toast('Update posted to the client page.');
+        renderDash();
+
+      } else if (b.dataset.act === 'interest') {
+        var ord = KK.order(id);
+        ord.events = ord.events || [];
+        ord.events.push({
+          at: new Date().toISOString(), stage: ord.status,
+          note: me.handle + ' (' + me.name + ') flagged interest in this brief.',
+          actor: me.handle
+        });
+        KK.updateOrder(id, { events: ord.events });
+        KK.toast('Interest noted — the desk will weigh it against the roster.');
+      }
+    });
+
+    /* ── boot ──────────────────────────────────────────── */
+    renderWho();
+    var saved = null;
+    try { saved = sessionStorage.getItem(SESSION); } catch (err) { /* non-fatal */ }
+    if (saved && KK.artist(saved)) { me = KK.artist(saved); openDash(); }
+
+    document.getElementById('pinInput').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { document.getElementById('signInBtn').click(); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

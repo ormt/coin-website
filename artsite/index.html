@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kalakunja Art House · कलाकुञ्ज | Commission hand-painted Nepali art</title>
+<meta name="description" content="Commission Paubha, Thangka, Mithila, portrait, landscape and mural work from a Nepali studio collective. One brief, one studio, one price — we place the work with the right hand." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Mukta:wght@300;400;500;600;700&family=Yatra+One&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/css/kalakunja.css" />
+<style>
+  /* ── Hero ─────────────────────────────────────────── */
+  .hero { position: relative; overflow: hidden; padding: 5rem 0 4.5rem; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.08fr .92fr;
+    gap: 3rem; align-items: center;
+  }
+  .hero h1 { margin: .4rem 0 1.1rem; }
+  .hero h1 .script { font-family: var(--font-deva); color: var(--sindoor); font-size: .62em; display: block; margin-bottom: .1em; }
+  .hero-actions { display: flex; gap: .9rem; flex-wrap: wrap; margin-top: 1.9rem; }
+  .hero-facts { display: flex; gap: 2.4rem; margin-top: 2.6rem; flex-wrap: wrap; }
+  .hero-facts .k { font-family: var(--font-display); font-size: 2rem; color: var(--sindoor); line-height: 1; }
+  .hero-facts .v { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: var(--ink-faint); }
+
+  .mandala-stage { position: relative; display: grid; place-items: center; min-height: 400px; }
+  .mandala-stage svg { width: min(100%, 430px); height: auto; }
+  .spin-slow { transform-origin: 50% 50%; animation: spin 90s linear infinite; }
+  .spin-rev   { transform-origin: 50% 50%; animation: spin 130s linear infinite reverse; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .mandala-halo {
+    position: absolute; width: 78%; aspect-ratio: 1; border-radius: 50%;
+    background: radial-gradient(circle, rgba(226,187,92,.35), rgba(226,187,92,0) 68%);
+    filter: blur(6px);
+  }
+
+  /* ── Marquee of traditions ────────────────────────── */
+  .ticker { overflow: hidden; border-block: 1px solid var(--line); background: rgba(242,232,213,.6); }
+  .ticker-track {
+    display: flex; gap: 3rem; padding: .8rem 0; white-space: nowrap;
+    animation: slide 38s linear infinite; width: max-content;
+  }
+  .ticker span { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink-soft); letter-spacing: .05em; }
+  .ticker span b { color: var(--sindoor); font-family: var(--font-deva); font-weight: 400; margin-right: .5rem; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* ── Tradition cards ──────────────────────────────── */
+  .trad-card .price-from { font-size: .82rem; color: var(--ink-faint); margin-top: .9rem; }
+  .trad-card .price-from b { color: var(--sindoor); font-size: 1rem; }
+  .trad-head { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; }
+  .trad-head .deva-sm { font-family: var(--font-deva); color: var(--brass); font-size: .95rem; }
+
+  /* ── Steps ────────────────────────────────────────── */
+  .steps { counter-reset: step; display: grid; gap: 1.4rem; grid-template-columns: repeat(4, 1fr); }
+  .step { position: relative; padding-top: 3.2rem; }
+  .step::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; top: 0; left: 0;
+    width: 46px; height: 46px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--font-display); font-size: 1.3rem; font-weight: 700;
+    color: #fff7ea; background: linear-gradient(135deg, var(--sindoor), var(--sindoor-dk));
+    box-shadow: 0 8px 18px -10px rgba(124,22,30,.9);
+  }
+  .step h3 { margin-bottom: .35rem; }
+  .step p { font-size: .93rem; color: var(--ink-soft); }
+
+  /* ── Anonymity panel ──────────────────────────────── */
+  .veil {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2.4rem; align-items: center;
+  }
+  .veil-visual {
+    background: linear-gradient(150deg, var(--indigo-dk), #24406b 60%, var(--plum));
+    border-radius: var(--radius-lg); padding: 2rem; color: #f3e9d7;
+    box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+  }
+  .veil-visual::after {
+    content: ''; position: absolute; inset: 0; opacity: .22;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Cg fill='none' stroke='%23e2bb5c' stroke-width='1'%3E%3Ccircle cx='30' cy='30' r='12'/%3E%3Cpath d='M30 6 L54 30 L30 54 L6 30 Z'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .veil-card {
+    position: relative; z-index: 1; background: rgba(255,250,240,.09);
+    border: 1px solid rgba(226,187,92,.35); border-radius: 12px; padding: 1.1rem 1.2rem;
+    backdrop-filter: blur(3px);
+  }
+  .veil-card + .veil-card { margin-top: .9rem; }
+  .veil-card .lbl { font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; color: var(--brass-lt); }
+  .veil-card .val { font-size: 1.05rem; font-weight: 600; }
+  .veil-card .redacted {
+    display: inline-block; background: rgba(243,233,215,.9); color: transparent;
+    border-radius: 4px; user-select: none; padding: 0 .5rem;
+  }
+  .veil ul { list-style: none; display: grid; gap: .8rem; margin-top: 1.2rem; }
+  .veil ul li { display: flex; gap: .7rem; align-items: flex-start; font-size: .96rem; }
+  .veil ul li .knot { color: var(--brass); font-size: 1.05rem; line-height: 1.5; }
+
+  /* ── Price table ──────────────────────────────────── */
+  .price-note { font-size: .86rem; color: var(--ink-faint); }
+
+  /* ── Gallery tiles (drawn, not photographed) ──────── */
+  .tiles-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
+  .art-tile {
+    aspect-ratio: 3/4; border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+    position: relative; background: #fffaf0; transition: transform .35s, box-shadow .35s;
+  }
+  .art-tile:hover { transform: translateY(-6px) rotate(-.6deg); box-shadow: var(--shadow-md); }
+  .art-tile svg { width: 100%; height: 100%; display: block; }
+  .art-tile figcaption {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(0deg, rgba(26,17,12,.88), rgba(26,17,12,0));
+    color: #f6efe1; padding: 1.6rem .9rem .7rem; font-size: .82rem;
+  }
+  .art-tile figcaption b { display: block; font-family: var(--font-display); font-size: 1rem; }
+
+  /* ── FAQ ──────────────────────────────────────────── */
+  details.faq {
+    border: 1px solid var(--line); border-radius: 12px; background: var(--surface);
+    padding: 1rem 1.2rem; margin-bottom: .8rem;
+  }
+  details.faq summary {
+    cursor: pointer; font-weight: 600; list-style: none; display: flex;
+    justify-content: space-between; gap: 1rem; align-items: center;
+  }
+  details.faq summary::-webkit-details-marker { display: none; }
+  details.faq summary::after { content: '+'; color: var(--sindoor); font-size: 1.4rem; line-height: 1; }
+  details.faq[open] summary::after { content: '–'; }
+  details.faq p { margin-top: .7rem; color: var(--ink-soft); font-size: .95rem; }
+
+  /* ── Closing CTA ──────────────────────────────────── */
+  .cta-band {
+    background: linear-gradient(135deg, var(--sindoor-dk), var(--sindoor) 55%, #8d2a2a);
+    color: #fff5e6; border-radius: var(--radius-lg); padding: 3rem 2.4rem;
+    text-align: center; position: relative; overflow: hidden; box-shadow: var(--shadow-md);
+  }
+  .cta-band::before {
+    content: ''; position: absolute; inset: 0; opacity: .18;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.2'%3E%3Cpath d='M40 8 L52 28 L40 48 L28 28 Z'/%3E%3Ccircle cx='40' cy='28' r='5'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .cta-band > * { position: relative; z-index: 1; }
+  .cta-band h2 { color: #fff5e6; }
+  .cta-band .lede { color: rgba(255,245,230,.86); }
+
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .mandala-stage { order: -1; min-height: 300px; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .veil { grid-template-columns: 1fr; }
+    .tiles-gallery { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 620px) {
+    .steps { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="prayer-strip"></div>
+
+<header class="site-head">
+  <div class="head-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="#fffaf0" stroke="#a4232c" stroke-width="2"/>
+        <g fill="none" stroke="#c39320" stroke-width="1.6">
+          <circle cx="32" cy="32" r="21"/>
+          <path d="M32 11 L48 32 L32 53 L16 32 Z"/>
+          <path d="M11 32 L32 16 L53 32 L32 48 Z"/>
+        </g>
+        <circle cx="32" cy="32" r="6" fill="#a4232c"/>
+        <circle cx="32" cy="32" r="2.4" fill="#e2bb5c"/>
+      </svg>
+      <span class="brand-text">
+        <span class="brand-deva">कलाकुञ्ज</span>
+        <span class="brand-en">Kalakunja Art House</span>
+      </span>
+    </a>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#traditions">Traditions</a></li>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="track.html">Track order</a></li>
+      <li><a class="btn btn-primary btn-sm" href="order.html">Commission a work</a></li>
+    </ul>
+  </div>
+</header>
+
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Kathmandu Valley · est. 2011</span>
+      <h1>
+        <span class="script">एउटै कुची, धेरै हात</span>
+        One studio.<br />Many hands.
+      </h1>
+      <p class="lede">
+        Commission Paubha, Thangka, Mithila, portrait, landscape or mural work from a
+        collective of Nepali painters. You write one brief and deal with one studio —
+        our dispatch desk quietly places the work with the hand best suited to it.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="order.html">Start a commission →</a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <div class="hero-facts">
+        <div><div class="k">9</div><div class="v">Member artists</div></div>
+        <div><div class="k">8</div><div class="v">Traditions</div></div>
+        <div><div class="k">640+</div><div class="v">Works delivered</div></div>
+        <div><div class="k">31</div><div class="v">Countries shipped</div></div>
+      </div>
+    </div>
+
+    <div class="mandala-stage">
+      <div class="mandala-halo"></div>
+      <svg viewBox="0 0 400 400" role="img" aria-label="Mandala motif">
+        <defs>
+          <radialGradient id="mg" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"  stop-color="#fffaf0"/>
+            <stop offset="70%" stop-color="#f2e8d5"/>
+            <stop offset="100%" stop-color="#e6d9c0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="200" cy="200" r="186" fill="url(#mg)" stroke="#c39320" stroke-width="1.5"/>
+
+        <!-- outer petal ring -->
+        <g class="spin-slow" fill="none" stroke="#a4232c" stroke-width="1.4" opacity=".85">
+          <g id="petals">
+            <path d="M200 26 C214 60 214 78 200 96 C186 78 186 60 200 26 Z"/>
+          </g>
+          <use href="#petals" transform="rotate(22.5 200 200)"/>
+          <use href="#petals" transform="rotate(45 200 200)"/>
+          <use href="#petals" transform="rotate(67.5 200 200)"/>
+          <use href="#petals" transform="rotate(90 200 200)"/>
+          <use href="#petals" transform="rotate(112.5 200 200)"/>
+          <use href="#petals" transform="rotate(135 200 200)"/>
+          <use href="#petals" transform="rotate(157.5 200 200)"/>
+          <use href="#petals" transform="rotate(180 200 200)"/>
+          <use href="#petals" transform="rotate(202.5 200 200)"/>
+          <use href="#petals" transform="rotate(225 200 200)"/>
+          <use href="#petals" transform="rotate(247.5 200 200)"/>
+          <use href="#petals" transform="rotate(270 200 200)"/>
+          <use href="#petals" transform="rotate(292.5 200 200)"/>
+          <use href="#petals" transform="rotate(315 200 200)"/>
+          <use href="#petals" transform="rotate(337.5 200 200)"/>
+        </g>
+
+        <circle cx="200" cy="200" r="150" fill="none" stroke="#123a6d" stroke-width="1.2" opacity=".6"/>
+        <circle cx="200" cy="200" r="142" fill="none" stroke="#c39320" stroke-width="3" stroke-dasharray="2 8" opacity=".8"/>
+
+        <!-- inner square / torana grid -->
+        <g class="spin-rev" fill="none" stroke="#1f6f5c" stroke-width="1.3" opacity=".75">
+          <rect x="110" y="110" width="180" height="180"/>
+          <rect x="110" y="110" width="180" height="180" transform="rotate(45 200 200)"/>
+        </g>
+
+        <circle cx="200" cy="200" r="86" fill="#fffaf0" stroke="#a4232c" stroke-width="1.6"/>
+        <g class="spin-slow" fill="none" stroke="#c39320" stroke-width="1.5">
+          <g id="lotus">
+            <path d="M200 122 C224 152 224 176 200 200 C176 176 176 152 200 122 Z"/>
+          </g>
+          <use href="#lotus" transform="rotate(45 200 200)"/>
+          <use href="#lotus" transform="rotate(90 200 200)"/>
+          <use href="#lotus" transform="rotate(135 200 200)"/>
+          <use href="#lotus" transform="rotate(180 200 200)"/>
+          <use href="#lotus" transform="rotate(225 200 200)"/>
+          <use href="#lotus" transform="rotate(270 200 200)"/>
+          <use href="#lotus" transform="rotate(315 200 200)"/>
+        </g>
+        <circle cx="200" cy="200" r="26" fill="#a4232c"/>
+        <circle cx="200" cy="200" r="12" fill="#e2bb5c"/>
+        <circle cx="200" cy="200" r="4"  fill="#2b1d15"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-track">
+    <span><b>पौभा</b>Paubha</span><span><b>थान्का</b>Thangka</span><span><b>मिथिला</b>Mithila</span>
+    <span><b>चित्र</b>Portrait</span><span><b>हिमाल</b>Landscape</span><span><b>भित्तेचित्र</b>Mural</span>
+    <span><b>रञ्जना</b>Calligraphy</span><span><b>समकालीन</b>Contemporary</span>
+    <span><b>पौभा</b>Paubha</span><span><b>थान्का</b>Thangka</span><span><b>मिथिला</b>Mithila</span>
+    <span><b>चित्र</b>Portrait</span><span><b>हिमाल</b>Landscape</span><span><b>भित्तेचित्र</b>Mural</span>
+    <span><b>रञ्जना</b>Calligraphy</span><span><b>समकालीन</b>Contemporary</span>
+  </div>
+</div>
+
+<!-- ══ TRADITIONS ════════════════════════════════════════ -->
+<section class="section" id="traditions">
+  <div class="wrap">
+    <div class="center reveal">
+      <span class="eyebrow">What we paint</span>
+      <h2>Eight living traditions <span class="deva">आठ परम्परा</span></h2>
+      <p class="lede">Every commission is painted by hand, start to finish. No prints, no transfers,
+        no generated imagery — the studio signs the back of each work with its atelier mark.</p>
+    </div>
+    <div class="grid g4 mt3" id="tradGrid"></div>
+  </div>
+</section>
+
+<!-- ══ HOW IT WORKS ══════════════════════════════════════ -->
+<section class="section section-alt" id="how">
+  <div class="wrap">
+    <div class="center reveal">
+      <span class="eyebrow">The path of a commission</span>
+      <h2>Four steps, one point of contact</h2>
+      <p class="lede">You never have to find, vet, chase or negotiate with an individual painter.
+        That is the studio's job.</p>
+    </div>
+
+    <div class="steps mt3 reveal">
+      <div class="step">
+        <h3>Write the brief</h3>
+        <p>Tradition, size, medium, finish and deadline — with a live price as you choose.
+          Ten minutes, no account needed.</p>
+      </div>
+      <div class="step">
+        <h3>We place the work</h3>
+        <p>Our dispatch desk scores every member artist on atelier, grade, workload and deadline,
+          then routes your brief to the best fit.</p>
+      </div>
+      <div class="step">
+        <h3>Sketch, then paint</h3>
+        <p>You approve a sketch before pigment is laid. Progress photographs arrive at each
+          milestone under your order code.</p>
+      </div>
+      <div class="step">
+        <h3>Review &amp; delivery</h3>
+        <p>Studio review against your brief, then framing, crating and insured shipping —
+          in Nepal or anywhere we ship.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ THE VEIL / ANONYMITY ══════════════════════════════ -->
+<section class="section">
+  <div class="wrap veil">
+    <div class="reveal">
+      <span class="eyebrow">Why you deal with the studio</span>
+      <h2>The hand stays behind the curtain</h2>
+      <p class="lede">
+        Kalakunja is a collective. Our member artists paint under the studio's name, and their
+        identities stay inside the studio. You get a consistent standard, one contract and one
+        price — and we get to put every brief in front of the right pair of hands.
+      </p>
+      <ul>
+        <li><span class="knot">✣</span><span><b>One accountable party.</b> The studio carries the deadline, the quality and the guarantee — not an individual you have never met.</span></li>
+        <li><span class="knot">✣</span><span><b>Illness, festivals, life.</b> If a hand has to step away mid-commission, we re-route the work internally. Your date does not move.</span></li>
+        <li><span class="knot">✣</span><span><b>No side channels.</b> Nobody is negotiated down, poached, or pressured off-hours. Our artists are paid a fixed studio rate per commission.</span></li>
+        <li><span class="knot">✣</span><span><b>You still see the work.</b> Atelier, grade and years of practice are on your tracking page — just not a name or a phone number.</span></li>
+      </ul>
+      <p class="mt2"><a class="btn btn-ghost" href="track.html">See a tracking page →</a></p>
+    </div>
+
+    <div class="veil-visual reveal">
+      <div class="row-between" style="margin-bottom:1rem">
+        <strong style="font-family:var(--font-display);font-size:1.25rem">What you see</strong>
+        <span class="chip chip-brass">Client view</span>
+      </div>
+      <div class="veil-card">
+        <div class="lbl">Assigned to</div>
+        <div class="val">Hand No. 02 · Guild Master</div>
+      </div>
+      <div class="veil-card">
+        <div class="lbl">Atelier</div>
+        <div class="val">Thangka Atelier · 18 years at the studio</div>
+      </div>
+      <div class="veil-card">
+        <div class="lbl">Name</div>
+        <div class="val"><span class="redacted">Tenzin Lama</span></div>
+      </div>
+      <div class="veil-card">
+        <div class="lbl">Direct contact</div>
+        <div class="val"><span class="redacted">+977 98xx xxxxxx</span></div>
+      </div>
+      <p style="margin-top:1rem;font-size:.86rem;opacity:.82;position:relative;z-index:1">
+        All correspondence, revisions and payment run through the studio desk.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ GALLERY ═══════════════════════════════════════════ -->
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="center reveal">
+      <span class="eyebrow">Recent commissions</span>
+      <h2>From the studio floor</h2>
+      <p class="lede">Motifs shown as studio drawings. Full plates are shared privately with clients on request.</p>
+    </div>
+
+    <div class="tiles-gallery mt3 reveal">
+      <figure class="art-tile">
+        <svg viewBox="0 0 300 400" aria-label="Paubha mandala study">
+          <rect width="300" height="400" fill="#0b2749"/>
+          <g fill="none" stroke="#e2bb5c" stroke-width="1.4" opacity=".9">
+            <circle cx="150" cy="180" r="110"/><circle cx="150" cy="180" r="86"/><circle cx="150" cy="180" r="42"/>
+            <path d="M150 70 L260 180 L150 290 L40 180 Z"/>
+            <path d="M150 96 L234 180 L150 264 L66 180 Z"/>
+          </g>
+          <circle cx="150" cy="180" r="20" fill="#a4232c"/>
+          <circle cx="150" cy="180" r="8" fill="#e2bb5c"/>
+          <g stroke="#c94a45" stroke-width="1" opacity=".7" fill="none">
+            <path d="M20 340 h260 M20 352 h260 M20 364 h260"/>
+          </g>
+        </svg>
+        <figcaption><b>Chandra Mandala</b>Paubha · mineral on cotton · 60 × 90 cm</figcaption>
+      </figure>
+
+      <figure class="art-tile">
+        <svg viewBox="0 0 300 400" aria-label="Mithila fish and lotus study">
+          <rect width="300" height="400" fill="#f2e8d5"/>
+          <g fill="none" stroke="#a4232c" stroke-width="2">
+            <path d="M60 200 C110 140 190 140 240 200 C190 260 110 260 60 200 Z"/>
+            <path d="M240 200 L275 168 L275 232 Z"/>
+            <circle cx="105" cy="190" r="9"/>
+          </g>
+          <g fill="none" stroke="#1f6f5c" stroke-width="1.5" opacity=".85">
+            <path d="M90 200 q30 -26 60 0 q30 26 60 0"/>
+            <path d="M100 216 q26 -20 52 0 q26 20 52 0"/>
+          </g>
+          <g fill="none" stroke="#123a6d" stroke-width="2">
+            <path d="M150 300 c-26 0 -42 18 -42 34 h84 c0 -16 -16 -34 -42 -34 Z"/>
+            <path d="M150 300 v-30"/>
+          </g>
+          <g stroke="#d98324" stroke-width="3" stroke-linecap="round">
+            <path d="M18 18 v364 M282 18 v364 M18 18 h264 M18 382 h264"/>
+          </g>
+        </svg>
+        <figcaption><b>Fish &amp; Lotus Panel</b>Mithila · watercolour on lokta · 30 × 45 cm</figcaption>
+      </figure>
+
+      <figure class="art-tile">
+        <svg viewBox="0 0 300 400" aria-label="Himalayan landscape study">
+          <rect width="300" height="400" fill="#e8ddc6"/>
+          <circle cx="228" cy="96" r="34" fill="#d98324" opacity=".55"/>
+          <path d="M0 250 L70 140 L120 210 L170 118 L240 240 L300 176 L300 400 L0 400 Z" fill="#123a6d" opacity=".82"/>
+          <path d="M0 300 L60 226 L128 300 L196 240 L300 320 L300 400 L0 400 Z" fill="#0b2749" opacity=".9"/>
+          <g stroke="#fffaf0" stroke-width="2.4" fill="none" opacity=".8">
+            <path d="M150 118 l-16 26 h32 Z"/><path d="M70 140 l-14 22 h28 Z"/>
+          </g>
+          <g stroke="#a4232c" stroke-width="4" opacity=".9">
+            <path d="M0 366 h300"/>
+          </g>
+        </svg>
+        <figcaption><b>Machhapuchhre, First Light</b>Landscape · acrylic · 90 × 120 cm</figcaption>
+      </figure>
+
+      <figure class="art-tile">
+        <svg viewBox="0 0 300 400" aria-label="Ranjana calligraphy study">
+          <rect width="300" height="400" fill="#fffaf0"/>
+          <g fill="none" stroke="#2b1d15" stroke-width="7" stroke-linecap="round">
+            <path d="M56 130 h188"/>
+            <path d="M84 130 v92 q0 34 34 34 q34 0 34 -34 v-92"/>
+            <path d="M186 130 v126"/>
+            <path d="M186 196 q40 0 40 30 t-40 30"/>
+          </g>
+          <g fill="none" stroke="#c39320" stroke-width="2.5">
+            <circle cx="118" cy="308" r="14"/><circle cx="186" cy="308" r="14"/>
+          </g>
+          <g fill="none" stroke="#a4232c" stroke-width="2">
+            <rect x="26" y="26" width="248" height="348"/>
+            <rect x="38" y="38" width="224" height="324" stroke-dasharray="6 6"/>
+          </g>
+        </svg>
+        <figcaption><b>Nāmamantra</b>Ranjana lipi · ink &amp; gold · 20 × 25 cm</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRICING ═══════════════════════════════════════════ -->
+<section class="section" id="pricing">
+  <div class="wrap">
+    <div class="center reveal">
+      <span class="eyebrow">Openly priced</span>
+      <h2>What a commission costs</h2>
+      <p class="lede">Base prices by canvas size, before tradition, medium, finish and timeline are applied.
+        The order form shows your exact figure before you commit to anything.</p>
+    </div>
+
+    <div class="panel mt3 reveal">
+      <div class="table-scroll">
+        <table class="data" id="priceTable">
+          <thead>
+            <tr><th>Canvas</th><th>Dimensions</th><th>Base (NPR)</th><th>Landscape, acrylic</th><th>Paubha, mineral, museum grade</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="price-note mt2">
+        A 40% deposit confirms the commission; the balance falls due when you approve the finished plate.
+        Frames, brocade mounts, 24k gold line work and insured export crating are priced separately.
+        Prices in Nepali rupees; card, bank transfer, eSewa and Khalti accepted.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ═══════════════════════════════════════════════ -->
+<section class="section section-alt">
+  <div class="wrap wrap-narrow">
+    <div class="center reveal">
+      <span class="eyebrow">Before you commission</span>
+      <h2>Questions we are asked <span class="deva">प्रश्न</span></h2>
+    </div>
+    <div class="mt3 reveal">
+      <details class="faq" open>
+        <summary>Can I choose my artist?</summary>
+        <p>Not by name. You choose the tradition, the finish grade and the deadline — the studio then places
+          the brief with the member artist whose atelier, grade and workload fit it best. If you have commissioned
+          with us before and want the same hand, quote your previous order code and we will route it back to them
+          where their schedule allows.</p>
+      </details>
+      <details class="faq">
+        <summary>Why don't you name your artists?</summary>
+        <p>Our members paint under the studio's name so that quality, scheduling and pricing stay the studio's
+          responsibility rather than an individual's. It also protects them from off-hours pressure and
+          price haggling. Their credentials — atelier, grade, years of practice — are visible on your order page.</p>
+      </details>
+      <details class="faq">
+        <summary>How many revisions do I get?</summary>
+        <p>Two rounds at the sketch stage, which is where changes are cheap and fast, plus one round of minor
+          colour adjustment on the finished plate. Changes to size, tradition or subject after the sketch is
+          approved are re-quoted as a new commission.</p>
+      </details>
+      <details class="faq">
+        <summary>Do you paint religious iconography for non-devotional use?</summary>
+        <p>Yes, and we will tell you plainly when a subject carries ritual meaning that is worth knowing about —
+          consecration, placement, or which forms are traditionally not sold. Our Paubha and Thangka ateliers
+          follow the iconometric proportions, whatever the intended use.</p>
+      </details>
+      <details class="faq">
+        <summary>Can you ship outside Nepal?</summary>
+        <p>We ship insured to 31 countries. Works are rolled or crated depending on medium and size, and we
+          handle the Department of Archaeology clearance certificate that Nepali customs requires for paintings.
+          Add export crating in the order form and we will quote the freight before you pay the balance.</p>
+      </details>
+      <details class="faq">
+        <summary>What if I don't like the finished painting?</summary>
+        <p>If the finished work departs from the approved sketch and brief, we repaint it at our cost. If you
+          simply change your mind, the deposit covers the hours already worked and we release you from the balance.
+          In eleven years that has happened four times.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ═══════════════════════════════════════════════ -->
+<section class="section">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <span class="deva" style="font-family:var(--font-deva);color:#e2bb5c;font-size:1.35rem">आफ्नो चित्र बनाउनुहोस्</span>
+      <h2 style="margin:.4rem 0 .8rem">Have something painted</h2>
+      <p class="lede">Ten minutes to write the brief. A price on screen before you commit.
+        A studio hand on it within two working days.</p>
+      <div class="row" style="justify-content:center;margin-top:1.6rem">
+        <a class="btn btn-brass" href="order.html">Start your commission</a>
+        <a class="btn btn-ghost" style="border-color:rgba(255,245,230,.5);color:#fff5e6" href="track.html">Track an existing order</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="lattice"></div>
+
+<!-- ══ FOOTER ════════════════════════════════════════════ -->
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:.9rem">
+          <span class="brand-text">
+            <span class="brand-deva" style="color:#e2bb5c">कलाकुञ्ज</span>
+            <span class="brand-en" style="color:rgba(229,216,196,.65)">Kalakunja Art House</span>
+          </span>
+        </div>
+        <p style="font-size:.9rem;opacity:.75;max-width:34ch">
+          A painters' collective working out of Patan and Bhaktapur. Hand-painted commissions in the
+          living traditions of Nepal, placed with the right hand by the studio desk.
+        </p>
+        <p style="font-size:.86rem;opacity:.6;margin-top:.9rem">
+          Pulchowk, Lalitpur · Kathmandu Valley, Nepal<br />
+          Sun–Fri, 10:00–18:00 NPT
+        </p>
+      </div>
+      <div>
+        <h4>Commission</h4>
+        <ul>
+          <li><a href="order.html">Start a brief</a></li>
+          <li><a href="track.html">Track an order</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#traditions">Traditions</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Studio</h4>
+        <ul>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#">Shipping &amp; customs</a></li>
+          <li><a href="#">Care of a painting</a></li>
+          <li><a href="#">Terms &amp; guarantee</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Members only</h4>
+        <ul>
+          <li><a href="studio.html">Dispatch desk</a></li>
+          <li><a href="artist.html">Artist portal</a></li>
+          <li><a href="#">Join the collective</a></li>
+          <li><a href="../index.html">COIN Pvt. Ltd.</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© <span data-year></span> Kalakunja Art House · a COIN Pvt. Ltd. studio</span>
+      <span>All works hand-painted in Nepal · कारीगरी नेपालमै</span>
+    </div>
+  </div>
+</footer>
+
+<div id="toast"></div>
+<script src="assets/js/kalakunja.js"></script>
+<script>
+(function () {
+  document.addEventListener('DOMContentLoaded', function () {
+    /* Tradition cards, generated from the catalogue so the order form,
+       pricing table and landing page can never drift apart. */
+    var grid = document.getElementById('tradGrid');
+    var smallest = KK.SIZES[0];
+    grid.innerHTML = KK.STYLES.map(function (s) {
+      var from = Math.round(smallest.base * s.mult / 500) * 500;
+      return '' +
+        '<article class="card trad-card">' +
+          '<div class="torana"><span class="glyph">' + s.glyph + '</span></div>' +
+          '<div class="trad-head"><h3>' + KK.esc(s.name) + '</h3>' +
+            '<span class="deva-sm">' + KK.esc(s.deva) + '</span></div>' +
+          '<p style="font-size:.92rem;color:var(--ink-soft);margin-top:.4rem">' + KK.esc(s.blurb) + '</p>' +
+          '<div class="price-from">from <b>' + KK.npr(from) + '</b> · ' + KK.esc(smallest.dims) + '</div>' +
+        '</article>';
+    }).join('');
+
+    /* Pricing table: base, a cheap configuration, an expensive one. */
+    var tbody = document.querySelector('#priceTable tbody');
+    tbody.innerHTML = KK.SIZES.map(function (sz) {
+      var cheap = KK.quote({ size: sz.id, style: 'landscape', medium: 'acrylic', finish: 'standard', timeline: 'standard', extras: [] });
+      var dear  = KK.quote({ size: sz.id, style: 'paubha',    medium: 'mineral', finish: 'museum',   timeline: 'standard', extras: [] });
+      return '<tr>' +
+        '<td><b>' + KK.esc(sz.label) + '</b></td>' +
+        '<td class="mono">' + KK.esc(sz.dims) + '</td>' +
+        '<td>' + KK.npr(sz.base) + '</td>' +
+        '<td>' + KK.npr(cheap.art) + ' <span class="muted">· ' + KK.usd(cheap.art) + '</span></td>' +
+        '<td>' + KK.npr(dear.art)  + ' <span class="muted">· ' + KK.usd(dear.art)  + '</span></td>' +
+        '</tr>';
+    }).join('');
+  });
+})();
+</script>
+</body>
+</html>
